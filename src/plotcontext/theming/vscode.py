@@ -6,17 +6,19 @@ import seaborn as sns
 
 
 class JSONWithCommentsDecoder(json.JSONDecoder):
-    """JSON decoder that automatically deals with the comments in vscode json esque settings"""
+    """JSON decoder that automatically deals with comments in vscode-esque settings"""
 
     def __init__(self, **kw):
         super().__init__(**kw)
 
     def decode(self, s: str):
         lines = []
-        for l in s.split("\n"):
-            if l.lstrip(" ").startswith("//"):
+        for line in s.split("\n"):
+            if line.lstrip(" ").startswith("//"):
                 continue
-            lines.append(re.sub(r'("(?:[^"\\]|\\.)*")|//.*$', lambda m: m.group(1) or "", l))
+            lines.append(
+                re.sub(r'("(?:[^"\\]|\\.)*")|//.*$', lambda m: m.group(1) or "", line)
+            )
         s = "\n".join(lines)
         s = re.sub(r",\s*}", "}", s)  # Remove trailing commas
         s = re.sub(r",\s*]", "]", s)  # Remove trailing commas in arrays
@@ -69,11 +71,15 @@ def get_extension_filepath(theme_name):
                 name = name.replace("-", " ")
                 category = package_data.get("categories", None)
                 if theme_name.lower() in name.lower() and category == ["Themes"]:
-                    theme_path = package_data["contributes"]["themes"][0].get("path", "")
+                    theme_path = package_data["contributes"]["themes"][0].get(
+                        "path", ""
+                    )
                     return folder_path / theme_path.lstrip("/\\")
                 for theme in themes:
                     label = theme.get("label", "!!!")
-                    if theme_name.lower() in label.lower():  # Case-insensitive comparison
+                    if (
+                        theme_name.lower() in label.lower()
+                    ):  # Case-insensitive comparison
                         theme_path = theme.get("path", "")
                         return folder_path / theme_path.lstrip("/\\")
             except json.JSONDecodeError as e:
@@ -111,13 +117,15 @@ def get_rc_params() -> dict:
                 json_settings["workbench.colorCustomizations"][f"[{theme_name}]"]
             )
 
-    bg_color = theme_settings["colors"].get("notebook.outputContainerBackgroundColor", None)
+    bg_color = theme_settings["colors"].get(
+        "notebook.outputContainerBackgroundColor", None
+    )
     if not bg_color:
         bg_color = theme_settings["colors"].get("editor.background", "#1E1E1E")
 
     text_color = theme_settings["colors"].get("editor.foreground", "#FFFFFF")
-    string_color = get_token_color(theme_settings, "string")
-    function_color = get_token_color(theme_settings, "keyword")
+    get_token_color(theme_settings, "string")
+    get_token_color(theme_settings, "keyword")
     comment_color = get_token_color(theme_settings, "comment")
 
     return {
@@ -135,5 +143,5 @@ def get_rc_params() -> dict:
 
 
 def set_theme() -> None:
-    """Apply the active VS Code color theme to matplotlib/seaborn via ``sns.set_style``."""
+    """Apply the active VS Code color theme to matplotlib/seaborn via sns.set_style."""
     sns.set_style("darkgrid", rc=get_rc_params())

@@ -19,7 +19,6 @@ import seaborn as sns
 from matplotlib import rcParams, ticker
 from matplotlib.axes import Axes
 from matplotlib.ticker import ScalarFormatter
-from matplotlib.typing import ColorType, LineStyleType  # ruff:ignore[unused-import]
 
 from plotcontext.plot_context import AbstractPlotContext
 
@@ -122,7 +121,7 @@ class HistogramStat(StrEnum):
 
 
 class TickFormatters:
-    """A collection of aliases pointing directly to Matplotlib tick formatter classes."""
+    """Aliases pointing directly to Matplotlib tick formatter classes."""
 
     NullFormatter: type[ticker.NullFormatter] = ticker.NullFormatter
     """No labels on the ticks."""
@@ -296,11 +295,13 @@ class SinglePlotContext(AbstractPlotContext):
         # self.formatter_x = formatter_x
         # self.formatter_y = formatter_y
         if self.sketch:
-            self.rc_params.update({
-                "font.family": "sans-serif",
-                "font.sans-serif": ["xkcd Script", "Comic Sans MS", "Arial"],
-                "font.serif": ["xkcd Script", "Comic Sans MS", "Arial"],
-            })
+            self.rc_params.update(
+                {
+                    "font.family": "sans-serif",
+                    "font.sans-serif": ["xkcd Script", "Comic Sans MS", "Arial"],
+                    "font.serif": ["xkcd Script", "Comic Sans MS", "Arial"],
+                }
+            )
 
         self.debug = debug
         self.create_fig = create_fig
@@ -314,12 +315,12 @@ class SinglePlotContext(AbstractPlotContext):
 
     @property
     def sns(self) -> sns_module:
-        """Proxy for seaborn module with automatic kwarg injection and perfect type hints."""
+        """Proxy for seaborn with automatic kwarg injection and perfect type hints."""
         return ModuleProxy(sns, self)  # type: ignore
 
     @property
     def plt(self) -> plt_module:
-        """Proxy for pyplot module with automatic kwarg injection and perfect type hints."""
+        """Proxy for pyplot with automatic kwarg injection and perfect type hints."""
         return ModuleProxy(plt, self)  # type: ignore
 
     def set_title(
@@ -416,15 +417,17 @@ class SinglePlotContext(AbstractPlotContext):
         else:
             # Unlike sns.set_theme(), all of these changes are scoped and will
             # be restored by the ExitStack.
-            contexts.extend([
-                sns.plotting_context(
-                    context=self.plot_context,
-                    font_scale=self.font_scale,
-                    rc=self.rc_params,
-                ),
-                sns.axes_style(self.style),
-                self._palette,
-            ])
+            contexts.extend(
+                [
+                    sns.plotting_context(
+                        context=self.plot_context,
+                        font_scale=self.font_scale,
+                        rc=self.rc_params,
+                    ),
+                    sns.axes_style(self.style),
+                    self._palette,
+                ]
+            )
 
         if self.styles:
             contexts.append(plt.style.context(self.styles))
@@ -548,7 +551,7 @@ class SinglePlotContext(AbstractPlotContext):
         return result
 
     def save(self, filename: str, **save_kwargs) -> None:
-        """Save the current figure with the given filename and additional savefig kwargs."""
+        """Save the current figure to filename with the given savefig kwargs."""
         if self.figure is None:
             msg = "No figure to save. Ensure you're within the context."
             raise RuntimeError(msg)
@@ -781,23 +784,25 @@ class PlotContext(AbstractPlotContext):
         self.formatter_x = formatter_x
         self.formatter_y = formatter_y
         if self.sketch:
-            self.rc_params.update({
-                "font.family": "sans-serif",
-                "font.sans-serif": ["xkcd Script", "Comic Sans MS", "Arial"],
-                "font.serif": ["xkcd Script", "Comic Sans MS", "Arial"],
-            })
+            self.rc_params.update(
+                {
+                    "font.family": "sans-serif",
+                    "font.sans-serif": ["xkcd Script", "Comic Sans MS", "Arial"],
+                    "font.serif": ["xkcd Script", "Comic Sans MS", "Arial"],
+                }
+            )
 
         self.debug = debug
         self.create_fig = create_fig
 
     @property
     def sns(self) -> sns_module:
-        """Proxy for seaborn module with automatic kwarg injection and perfect type hints."""
+        """Proxy for seaborn with automatic kwarg injection and perfect type hints."""
         return ModuleProxy(sns, self)  # type: ignore
 
     @property
     def plt(self) -> plt_module:
-        """Proxy for pyplot module with automatic kwarg injection and perfect type hints."""
+        """Proxy for pyplot with automatic kwarg injection and perfect type hints."""
         return ModuleProxy(plt, self)  # type: ignore
 
     def __enter__(self) -> Self:
@@ -826,14 +831,16 @@ class PlotContext(AbstractPlotContext):
         else:
             # Unlike sns.set_theme(), all of these changes are scoped and will
             # be restored by the ExitStack.
-            contexts.extend([
-                sns.plotting_context(
-                    context=self.plot_context,
-                    font_scale=self.font_scale,
-                ),
-                sns.axes_style(self.style),
-                self._palette,
-            ])
+            contexts.extend(
+                [
+                    sns.plotting_context(
+                        context=self.plot_context,
+                        font_scale=self.font_scale,
+                    ),
+                    sns.axes_style(self.style),
+                    self._palette,
+                ]
+            )
 
         if self.styles:
             contexts.append(plt.style.context(self.styles))
@@ -963,7 +970,7 @@ class PlotContext(AbstractPlotContext):
         return result
 
     def save(self, filename: str, **save_kwargs) -> None:
-        """Save the current figure with the given filename and additional savefig kwargs."""
+        """Save the current figure to filename with the given savefig kwargs."""
         if self.figure is None:
             msg = "No figure to save. Ensure you're within the context."
             raise RuntimeError(msg)
@@ -986,7 +993,7 @@ class PlotContext(AbstractPlotContext):
         print(f"Saved figure to {filename} with kwargs: {default_kwargs}")
 
     def clip(self, **save_kwargs):
-        """Save the current figure with the given filename and additional savefig kwargs."""
+        """Save the current figure to filename with the given savefig kwargs."""
         if self.figure is None:
             msg = "No figure to save. Ensure you're within the context."
             raise RuntimeError(msg)
@@ -1033,7 +1040,7 @@ class PlotContext(AbstractPlotContext):
         x = kwargs.get("x" if annotate == "y" else "y")
         x_align = kwargs.get("x_align", "median")
 
-        # Get unique values while preserving order of appearance if not explicitly provided
+        # Get unique values, preserving order of appearance if not explicitly provided
         hue_order = (
             kwargs.get(
                 "hue_order",
@@ -1053,7 +1060,7 @@ class PlotContext(AbstractPlotContext):
         data = orig_data.clone()
         group = []
 
-        # Cast grouping variables to pl.Enum to enforce deterministic ordering in the groupby
+        # Cast grouping variables to pl.Enum for deterministic ordering in the groupby
         data = data.with_columns(pl.col(y).cast(pl.Enum(order)))
         group.append(y)
 
@@ -1106,7 +1113,7 @@ class PlotContext(AbstractPlotContext):
                 },
             )
 
-            # Keep tracking history purely for logic continuity (matching old implementation)
+            # Keep tracking history for logic continuity (matching old implementation)
             tuple(row[g_col] for g_col in group)
 
         return g, counts

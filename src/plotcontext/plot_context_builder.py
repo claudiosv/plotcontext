@@ -132,12 +132,14 @@ class Plot(AbstractContextManager["Plot"]):  # noqa: PLR0904
     ...     p.sns.barplot(data=df, x="threads", y="ops", hue="impl")
     """
 
-    _NO_AX_FUNCS: frozenset[str] = frozenset({
-        "relplot",
-        "catplot",
-        "move_legend",
-        "FacetGrid",
-    })
+    _NO_AX_FUNCS: frozenset[str] = frozenset(
+        {
+            "relplot",
+            "catplot",
+            "move_legend",
+            "FacetGrid",
+        }
+    )
 
     def __init__(self) -> None:
         # Decoration

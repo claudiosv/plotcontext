@@ -8,6 +8,15 @@ resolution-markers = [
 ]
 
 [[package]]
+name = "clipin"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/f2/a1ce66cb03c85c56814b188e4bde5feb2b76edb35ffce17cf99307d72c6c/clipin-1.0.0.tar.gz", hash = "sha256:f8204cfeb58db86d58e19787b68a4fa1363d9bc1b0d30725408199673850e4f9", size = 23726, upload-time = "2026-01-05T19:18:32.111Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7a/58/8451ebd54d311aa74975d8a5ff9dd973c03175022cda49281e00f704850f/clipin-1.0.0-py3-none-any.whl", hash = "sha256:a2e70bd146cca9fed6aca0dae865d83a9bc275c8c72fe727c665953a8b54fbc7", size = 25637, upload-time = "2026-01-05T19:18:30.981Z" },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -437,8 +446,9 @@ wheels = [
 [[package]]
 name = "plotcontext"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
+    { name = "clipin" },
     { name = "emoji" },
     { name = "matplotlib" },
     { name = "pandas" },

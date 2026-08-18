@@ -83,7 +83,8 @@ class PlotContextFontTools:
                     )
                 )
                 print(
-                    f"Applied Seaborn plotting context: {self.sns_plot_context} with font scale {self.font_scale}"
+                    f"Applied Seaborn plotting context: {self.sns_plot_context} "
+                    f"with font scale {self.font_scale}"
                 )
 
             # 3. Specific Overrides: IEEE/Science
@@ -122,7 +123,9 @@ class PlotContextFontTools:
                     "savefig.pad_inches": 0.01,
                     "savefig.transparent": True,
                     # "text.usetex": True,
-                    # "text.latex.preamble": r"\usepackage{libertine} \usepackage[libertine]{newtxmath}",
+                    # "text.latex.preamble": (
+                    #     r"\usepackage{libertine} \usepackage[libertine]{newtxmath}"
+                    # ),
                     "xtick.labelsize": 9,
                     "ytick.labelsize": 9,
                 }
@@ -202,7 +205,7 @@ class PlotContextFontTools:
         return func(*args, **kwargs)
 
     def save(self, filename: str, **save_kwargs: Any) -> None:
-        """Save the current figure with the given filename and additional savefig kwargs."""
+        """Save the current figure to filename with the given savefig kwargs."""
         if self.figure is None:
             raise RuntimeError("No figure to save. Ensure you're within the context.")
 
