@@ -5,6 +5,9 @@ import pytest
 from plotcontext.plot_context_font_tools import PlotContextFontTools
 
 
+@pytest.mark.mpl_image_compare(
+    style="default", filename="test_plot_context_font_tools_basic_lifecycle.png"
+)
 def test_basic_lifecycle_creates_and_closes_figure():
     ctx = PlotContextFontTools(title="T", x_label="X", y_label="Y")
     with ctx as returned:
@@ -14,41 +17,52 @@ def test_basic_lifecycle_creates_and_closes_figure():
 
     assert ctx._exited is True
     assert not plt.fignum_exists(ctx.figure.number)
+    return ctx.figure
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_title_dict_variant():
     ctx = PlotContextFontTools(title={"label": "Dict Title"})
     with ctx:
         pass
     assert ctx._finalized is True
+    return ctx.figure
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_legend_and_grid_and_despine():
     ctx = PlotContextFontTools(legend=True, grid="x", despine=True)
     with ctx:
         ctx.ax.plot([1, 2], [1, 2], label="line")
     assert ctx._finalized is True
+    return ctx.figure
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_sketch_mode():
     ctx = PlotContextFontTools(sketch=True)
     with ctx:
-        pass
+        ctx.ax.plot([1, 2], [1, 2])
     assert ctx._exited is True
+    return ctx.figure
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_ieee_plot_context():
     ctx = PlotContextFontTools(plot_context="ieee")
     with ctx:
-        pass
+        ctx.ax.plot([1, 2], [1, 2])
     assert ctx._exited is True
+    return ctx.figure
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_acm_plot_context():
     ctx = PlotContextFontTools(plot_context="acm")
     with ctx:
-        pass
+        ctx.ax.plot([1, 2], [1, 2])
     assert ctx._exited is True
+    return ctx.figure
 
 
 def test_call_injects_managed_axis():
@@ -65,6 +79,7 @@ def test_call_injects_managed_axis():
         assert calls["ax"] is ctx.ax
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_save_finalizes_and_writes_file(tmp_path):
     ctx = PlotContextFontTools()
     with ctx:
@@ -72,6 +87,7 @@ def test_save_finalizes_and_writes_file(tmp_path):
     out = tmp_path / "out.pdf"
     ctx.save(str(out))
     assert out.exists()
+    return ctx.figure
 
 
 def test_save_raises_without_figure():

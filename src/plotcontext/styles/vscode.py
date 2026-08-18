@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Literal
 
 import jsonc
-import seaborn as sns
 
 ColorSource = Literal["text", "token"]
 
@@ -179,18 +178,3 @@ def get_rc_params(
         "axes.edgecolor": text_color,
         "lines.markeredgecolor": bg_color,
     }
-
-
-def set_theme(
-    *,
-    text_color_source: ColorSource = "text",
-    label_color_source: ColorSource = "text",
-) -> None:
-    """Apply the active VS Code color theme to matplotlib/seaborn via sns.set_style.
-
-    See `get_rc_params` for `text_color_source` and `label_color_source`.
-    """
-    rc = get_rc_params(
-        text_color_source=text_color_source, label_color_source=label_color_source
-    )
-    sns.set_style("darkgrid", rc=rc)

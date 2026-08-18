@@ -88,6 +88,7 @@ def test_emoji_image_raises_when_nothing_rendered(monkeypatch):
     emoji_image.cache_clear()
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_set_emoji_xticklabels_without_emoji(monkeypatch):
     import matplotlib.pyplot as plt
 
@@ -100,9 +101,10 @@ def test_set_emoji_xticklabels_without_emoji(monkeypatch):
 
     assert len(artists) == 3
     assert [t.get_text() for t in ax.get_xticklabels()] == ["", "", ""]
-    plt.close(fig)
+    return fig
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_set_emoji_xticklabels_with_emoji(monkeypatch):
     import matplotlib.pyplot as plt
 
@@ -114,10 +116,11 @@ def test_set_emoji_xticklabels_with_emoji(monkeypatch):
     fake_array = np.zeros((4, 4, 4), dtype=np.uint8)
     monkeypatch.setattr(auto_emoji, "emoji_image", lambda char, px=160: fake_array)
 
-    artists = set_emoji_xticklabels(ax)
+    with pytest.warns(UserWarning, match="missing from font"):
+        artists = set_emoji_xticklabels(ax)
 
     assert len(artists) == 2
     new_labels = [t.get_text() for t in ax.get_xticklabels()]
     assert new_labels[0] == "hot"
     assert new_labels[1] == ""
-    plt.close(fig)
+    return fig

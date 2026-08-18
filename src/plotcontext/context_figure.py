@@ -8,6 +8,8 @@ from matplotlib.axis import Tick
 from matplotlib.figure import Figure
 from matplotlib.text import Text
 
+from plotcontext._backend import can_show
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
     from types import TracebackType
@@ -28,7 +30,7 @@ class ContextFigure(Figure):
     ) -> Literal[False]:
         try:
             # Avoid displaying a partially constructed plot after an error.
-            if exc_type is None:
+            if exc_type is None and can_show():
                 plt.show()
         finally:
             plt.close(self)

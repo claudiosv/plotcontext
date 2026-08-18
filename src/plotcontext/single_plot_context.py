@@ -9,13 +9,16 @@ from typing import TYPE_CHECKING, Any, Literal, Self
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.text as mtext
-import scienceplots  # noqa: F401 - registers "science"/"ieee" plt.style entries
 import seaborn as sns
 from matplotlib import rcParams
 from matplotlib.axes import Axes
 
+from plotcontext._backend import can_show
 from plotcontext.plot_context import AbstractPlotContext
 from plotcontext.polars_plot_context import ModuleProxy, SketchConfig
+from plotcontext.styles.scienceplots import resolve_styles
+from plotcontext.styles.sketch import SKETCH_FONTS_RC
+from plotcontext.styles.slides import SLIDES_RC
 
 if TYPE_CHECKING:
     # This tricks type checkers into giving perfect autocomplete for ctx.sns and ctx.plt
@@ -36,30 +39,7 @@ class SinglePlotContext(AbstractPlotContext):
 
     @staticmethod
     def slides_rc_params() -> dict[mpl.typing.RcKeyType, Any]:
-        return {
-            # 16:9 aspect ratio matching standard slide dimensions
-            "figure.figsize": (10.0, 5.625),
-            "figure.dpi": 300,
-            # Base font scaling
-            "font.size": 18,
-            "axes.titlesize": 24,
-            "axes.labelsize": 20,
-            # Tick scaling
-            "xtick.labelsize": 16,
-            "ytick.labelsize": 16,
-            "xtick.major.width": 1.5,
-            "ytick.major.width": 1.5,
-            # Legend scaling
-            "legend.fontsize": 16,
-            "legend.title_fontsize": 18,
-            # Line and marker visibility
-            "lines.linewidth": 3.0,
-            "lines.markersize": 10,
-            "axes.linewidth": 1.5,
-            # Export settings
-            "savefig.bbox": "tight",
-            "savefig.transparent": True,
-        }
+        return dict(SLIDES_RC)
 
     def __init__(
         self,
@@ -115,13 +95,7 @@ class SinglePlotContext(AbstractPlotContext):
         )
         self._drawn = False
         if self.sketch:
-            self.rc_params.update(
-                {
-                    "font.family": "sans-serif",
-                    "font.sans-serif": ["xkcd Script", "Comic Sans MS", "Arial"],
-                    "font.serif": ["xkcd Script", "Comic Sans MS", "Arial"],
-                }
-            )
+            self.rc_params.update(SKETCH_FONTS_RC)
 
         self.debug = debug
         self.create_fig = create_fig
@@ -223,7 +197,7 @@ class SinglePlotContext(AbstractPlotContext):
         contexts: list[AbstractContextManager] = []
 
         if self.plot_context == "ieee":
-            contexts.append(plt.style.context(["science", "ieee"]))
+            contexts.append(plt.style.context(resolve_styles(["science", "ieee"])))
         else:
             # Unlike sns.set_theme(), all of these changes are scoped and will
             # be restored by the ExitStack.
@@ -240,7 +214,7 @@ class SinglePlotContext(AbstractPlotContext):
             )
 
         if self.styles:
-            contexts.append(plt.style.context(self.styles))
+            contexts.append(plt.style.context(resolve_styles(self.styles)))
 
         if self.sketch:
             xkcd_kwargs = self.sketch if isinstance(self.sketch, dict) else {}
@@ -265,7 +239,8 @@ class SinglePlotContext(AbstractPlotContext):
                     self._draw()
 
                 # Show exactly once, and only after successful body execution.
-                plt.show()
+                if can_show():
+                    plt.show()
         finally:
             # Always release the owned figure and all scoped state, including
             # when _draw(), show(), or close() raises.

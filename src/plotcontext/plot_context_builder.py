@@ -32,38 +32,17 @@ from matplotlib import rcParams
 from matplotlib.axes import Axes
 from matplotlib.ticker import ScalarFormatter
 
+from plotcontext._backend import can_show
+from plotcontext.styles.scienceplots import resolve_styles
+from plotcontext.styles.sketch import SKETCH_FONTS_RC
+from plotcontext.styles.slides import SLIDES_RC
+
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
 SeabornStyle = Literal["white", "dark", "whitegrid", "darkgrid", "ticks"]
 SeabornContext = Literal["paper", "notebook", "talk", "poster", "ieee"]
 GridAxis = Literal["both", "x", "y"]
-
-SLIDES_RC: dict[str, Any] = {
-    # 16:9 aspect ratio matching standard slide dimensions
-    "figure.figsize": (10.0, 5.625),
-    "figure.dpi": 300,
-    "font.size": 18,
-    "axes.titlesize": 24,
-    "axes.labelsize": 20,
-    "xtick.labelsize": 16,
-    "ytick.labelsize": 16,
-    "xtick.major.width": 1.5,
-    "ytick.major.width": 1.5,
-    "legend.fontsize": 16,
-    "legend.title_fontsize": 18,
-    "lines.linewidth": 3.0,
-    "lines.markersize": 10,
-    "axes.linewidth": 1.5,
-    "savefig.bbox": "tight",
-    "savefig.transparent": True,
-}
-
-SKETCH_FONTS_RC: dict[str, Any] = {
-    "font.family": "sans-serif",
-    "font.sans-serif": ["xkcd Script", "Comic Sans MS", "Arial"],
-    "font.serif": ["xkcd Script", "Comic Sans MS", "Arial"],
-}
 
 
 class SketchConfig(TypedDict, total=False):
@@ -252,7 +231,7 @@ class Plot(AbstractContextManager["Plot"]):  # noqa: PLR0904
         return self
 
     def context(self, context: SeabornContext) -> Self:
-        """Set the seaborn plotting context (or ``"ieee"`` for SciencePlots)."""
+        """Set the seaborn plotting context (or the bundled ``"ieee"`` style)."""
         self._context = context
         return self
 
@@ -438,7 +417,9 @@ class Plot(AbstractContextManager["Plot"]):  # noqa: PLR0904
     def _setup_styles(self) -> None:
         """Push all style layers onto the exit stack for clean teardown."""
         if self._context == "ieee":
-            self._stack.enter_context(plt.style.context(["science", "ieee"]))
+            self._stack.enter_context(
+                plt.style.context(resolve_styles(["science", "ieee"]))
+            )
             return
 
         sns.set_theme(
@@ -457,7 +438,7 @@ class Plot(AbstractContextManager["Plot"]):  # noqa: PLR0904
         ]
 
         if self._extra_styles:
-            contexts.append(plt.style.context(self._extra_styles))
+            contexts.append(plt.style.context(resolve_styles(self._extra_styles)))
         if self._sketch is not None:
             contexts.append(plt.xkcd(**self._sketch))
 
@@ -471,7 +452,8 @@ class Plot(AbstractContextManager["Plot"]):  # noqa: PLR0904
                     warnings.warn("No ax found on exit", stacklevel=2)
                 else:
                     self._draw()
-                plt.show()
+                if can_show():
+                    plt.show()
         finally:
             self._close()
             self._stack.close()

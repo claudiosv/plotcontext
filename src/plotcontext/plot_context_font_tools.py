@@ -1,4 +1,3 @@
-import importlib
 from collections.abc import Callable
 from contextlib import ExitStack
 from pathlib import Path
@@ -9,6 +8,10 @@ import matplotlib.font_manager as fm
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
+
+from plotcontext._backend import can_show
+from plotcontext.styles.icml import icml_rc_params
+from plotcontext.styles.scienceplots import resolve_styles
 
 T = TypeVar("T")
 
@@ -89,36 +92,16 @@ class PlotContextFontTools:
 
             # 3. Specific Overrides: IEEE/Science
             if self.plot_context == "ieee":
-                self.stack.enter_context(plt.style.context(["science", "ieee"]))
+                self.stack.enter_context(
+                    plt.style.context(resolve_styles(["science", "ieee"]))
+                )
                 print(f"Applied plot context: {self.plot_context}")
 
             if self.plot_context == "acm":
                 # 4. The "Gold Standard": ICML/ACM Style
                 # This is entered last to ensure your exact figure size,
                 # LaTeX fonts, and PDF settings override everything else.
-                icml_params = {
-                    "axes.labelsize": 9,
-                    "axes.titlepad": 0,
-                    "axes.titlesize": 9,
-                    "figure.constrained_layout.h_pad": 0.02,
-                    "figure.constrained_layout.hspace": 0.01,
-                    "figure.constrained_layout.use": True,  # Global toggle
-                    "figure.constrained_layout.w_pad": 0.02,
-                    "figure.dpi": 300,
-                    "figure.figsize": (self.fig_x, self.fig_y / self.fig_x),
-                    "font.family": "serif",
-                    "font.serif": ["Linux Libertine", "Libertine", "DejaVu Serif"],
-                    "font.size": 9,
-                    "legend.borderaxespad": 0,
-                    "legend.borderpad": 0,
-                    "legend.fontsize": 9,
-                    "lines.markersize": 3,
-                    "savefig.bbox": "tight",
-                    "savefig.pad_inches": 0.01,
-                    "savefig.transparent": True,
-                    "xtick.labelsize": 9,
-                    "ytick.labelsize": 9,
-                }
+                icml_params = icml_rc_params(self.fig_x, self.fig_y)
                 self.stack.enter_context(plt.rc_context(rc=icml_params))
                 print(
                     f"Applied ACM/ICML style with figure size {self.fig_x}x{self.fig_y}"
@@ -144,7 +127,8 @@ class PlotContextFontTools:
         with self.stack:  # This automatically calls __exit__ on all stored contexts
             if exc_type is None and self.ax is not None:
                 self._finalize_plot()
-                plt.show()
+                if can_show():
+                    plt.show()
 
             # If it's not an interactive backend, close to save memory
             if not mpl.get_backend().startswith("module://ipympl"):
@@ -213,16 +197,6 @@ class PlotContextFontTools:
         mpl.rcParams.update(mpl.rcParamsDefault)
         # If you use Seaborn, it's also good to reset its specific defaults
         sns.reset_orig()
-
-        try:
-            import scienceplots
-
-            importlib.reload(scienceplots)
-            # Re-scan the style library so Matplotlib sees the re-registered styles
-            plt.style.reload_library()
-            print("✔ SciencePlots reloaded and registered.")
-        except ImportError:
-            print("! SciencePlots not found; skipping reload.")
         print("✔ Matplotlib rcParams have been reset to defaults.")
 
     @staticmethod

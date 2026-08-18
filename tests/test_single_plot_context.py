@@ -3,12 +3,14 @@ import pytest
 
 from plotcontext.plot_context import AbstractPlotContext
 from plotcontext.single_plot_context import SinglePlotContext
+from plotcontext.styles.scienceplots import SCIENCEPLOTS_STYLES
 
 
 def test_single_plot_context_is_abstract_plot_context():
     assert issubclass(SinglePlotContext, AbstractPlotContext)
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_creates_and_closes_figure():
     ctx = SinglePlotContext(figsize=(4.0, 3.0))
     with ctx as (returned_ctx, fig, ax):
@@ -19,36 +21,45 @@ def test_single_plot_context_creates_and_closes_figure():
 
     assert ctx.exited is True
     assert not plt.fignum_exists(fig.number)
+    return ctx.figure
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_set_title():
-    with SinglePlotContext(figsize=(4.0, 3.0)) as (ctx, _fig, _ax):
+    with SinglePlotContext(figsize=(4.0, 3.0)) as (ctx, fig, _ax):
         text = ctx.set_title("hello")
         assert text.get_text() == "hello"
+    return fig
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_sns_proxy_injects_ax():
-    with SinglePlotContext(figsize=(4.0, 3.0)) as (ctx, _fig, ax):
+    with SinglePlotContext(figsize=(4.0, 3.0)) as (ctx, fig, ax):
         result_ax = ctx.sns.lineplot(x=[1, 2, 3], y=[1, 4, 9])
         assert result_ax is ax
+    return fig
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_save(tmp_path):
     ctx = SinglePlotContext(figsize=(4.0, 3.0))
-    with ctx as (_ctx, _fig, ax):
+    with ctx as (_ctx, fig, ax):
         ax.plot([1, 2], [1, 2])
         out = tmp_path / "out.pdf"
         ctx.save(str(out))
     assert out.exists()
+    return fig
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_save_fig(tmp_path):
     ctx = SinglePlotContext(figsize=(4.0, 3.0))
-    with ctx as (_ctx, _fig, ax):
+    with ctx as (_ctx, fig, ax):
         ax.plot([1, 2], [1, 2])
     ctx.save_fig(tmp_path, "myplot")
     saved = list(tmp_path.glob("myplot_*.pdf")) + list(tmp_path.glob("myplot_*.png"))
     assert len(saved) == 2
+    return fig
 
 
 def test_single_plot_context_activate_raises_without_figure():
@@ -77,10 +88,8 @@ def test_single_plot_context_exception_does_not_draw():
     assert ctx._drawn is False
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_ieee_style(monkeypatch):
-    # "science"/"ieee" styles are registered globally by scienceplots at import
-    # time; other tests that reload the style library can drop them, so stub
-    # plt.style.context instead of depending on that global mutable state.
     captured = {}
     real_context = plt.style.context
 
@@ -91,24 +100,32 @@ def test_single_plot_context_ieee_style(monkeypatch):
     monkeypatch.setattr(plt.style, "context", fake_context)
 
     ctx = SinglePlotContext(figsize=(4.0, 3.0), plot_context="ieee")
-    with ctx:
-        pass
+    with ctx as (_ctx, _fig, ax):
+        ax.plot([1, 2], [1, 2])
     assert ctx.exited is True
-    assert captured["styles"] == ["science", "ieee"]
+    assert captured["styles"] == [
+        SCIENCEPLOTS_STYLES["science"],
+        SCIENCEPLOTS_STYLES["ieee"],
+    ]
+    return ctx.figure
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_extra_styles():
     ctx = SinglePlotContext(figsize=(4.0, 3.0), styles=["seaborn-v0_8"])
-    with ctx:
-        pass
+    with ctx as (_ctx, _fig, ax):
+        ax.plot([1, 2], [1, 2])
     assert ctx.exited is True
+    return ctx.figure
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_sketch_xkcd_context_entered():
     ctx = SinglePlotContext(figsize=(4.0, 3.0), sketch={"scale": 2})
     with ctx as (_ctx, _fig, ax):
         ax.plot([1, 2], [1, 2])
     assert ctx.exited is True
+    return ctx.figure
 
 
 def test_single_plot_context_enter_failure_closes_stack(monkeypatch):
@@ -123,13 +140,15 @@ def test_single_plot_context_enter_failure_closes_stack(monkeypatch):
             pass
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_debug_prints_injection_info(capsys):
     ctx = SinglePlotContext(figsize=(4.0, 3.0), debug=True)
-    with ctx as (_ctx, _fig, ax):
+    with ctx as (_ctx, fig, ax):
         ctx.sns.lineplot(x=[1, 2], y=[1, 2])
     out = capsys.readouterr().out
     assert "accepts" in out
     assert "Called lineplot" in out
+    return fig
 
 
 def test_single_plot_context_save_raises_when_ax_missing_and_not_drawn():
@@ -147,19 +166,24 @@ def test_single_plot_context_slides_rc_params():
     assert rc["figure.dpi"] == 300
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_color_map_injects_palette():
     ctx = SinglePlotContext(figsize=(4.0, 3.0), color_map={"a": 0, "b": 1})
-    with ctx as (_ctx, _fig, _ax):
-        result_ax = ctx.sns.scatterplot(x=[1, 2], y=[1, 2])
+    with ctx as (_ctx, fig, _ax):
+        with pytest.warns(UserWarning, match="Ignoring `palette`"):
+            result_ax = ctx.sns.scatterplot(x=[1, 2], y=[1, 2])
         assert result_ax is ctx.ax
+    return fig
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_tight_layout_and_legend_sketch():
     ctx = SinglePlotContext(figsize=(4.0, 3.0), tight_layout=True, sketch=True)
-    with ctx as (_ctx, _fig, ax):
+    with ctx as (_ctx, fig, ax):
         ax.plot([1, 2], [1, 2], label="line")
         ax.legend()
     assert ctx._drawn is True
+    return fig
 
 
 def test_single_plot_context_save_fig_rejects_non_string_name(tmp_path):
@@ -180,9 +204,11 @@ def test_single_plot_context_save_fig_rejects_file_as_output_path(tmp_path):
         ctx.save_fig(file_path, "name")
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_save_fig_warns_before_exit(tmp_path):
     ctx = SinglePlotContext(figsize=(4.0, 3.0))
     ctx.figure, ctx.ax = plt.subplots()
+    ctx.ax.plot([1, 2], [1, 2])
     with pytest.warns(UserWarning, match="before exit"):
         ctx.save_fig(tmp_path, "name")
-    plt.close(ctx.figure)
+    return ctx.figure

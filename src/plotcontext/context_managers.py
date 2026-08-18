@@ -6,6 +6,8 @@ from contextlib import contextmanager
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from plotcontext._backend import can_show
+
 
 @contextmanager
 def plot_context(*args, **kwargs) -> Iterator[tuple[plt.Figure, plt.Axes]]:
@@ -14,7 +16,8 @@ def plot_context(*args, **kwargs) -> Iterator[tuple[plt.Figure, plt.Axes]]:
     try:
         yield fig, ax
     finally:
-        plt.show()
+        if can_show():
+            plt.show()
         plt.close(fig)
 
 
@@ -24,7 +27,8 @@ def auto_show() -> Iterator[None]:
     try:
         yield
     finally:
-        plt.show()
+        if can_show():
+            plt.show()
         plt.close("all")
 
 
@@ -38,5 +42,6 @@ def facet_context(
         axes = g.ax if hasattr(g, "ax") else g.axes
         yield g, g.fig, axes
     finally:
-        plt.show()
+        if can_show():
+            plt.show()
         plt.close(g.fig)

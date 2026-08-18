@@ -3,21 +3,21 @@ build-backend = "uv_build"
 requires      = ["uv_build>=0.12,<0.13.0"]
 
 [project]
-name = "plotcontext"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.14"
 dependencies = [
     "matplotlib>=3.10.8",
     "polars>=1.0",
     "pandas>=2.0",
-    "scienceplots>=2.2.1",
     "seaborn>=0.13.2",
     "statsmodels>=0.14.6",
     "emoji>=2.15.0",
     "json-with-comments>=1.2.10",
+    "pyarrow>=14",
 ]
+description = "Add your description here"
+name = "plotcontext"
+readme = "README.md"
+requires-python = ">=3.14"
+version = "0.1.0"
 
 [project.optional-dependencies]
 clipboard = ["clipin>=1.0.0"]
@@ -32,11 +32,41 @@ dev = [
     "plotcontext[clipboard]",
 ]
 
-[tool.pytest.ini_options]
+[tool.pytest]
+minversion = "9.0"
+
+# Only discover tests under ./tests.
 testpaths = ["tests"]
-addopts = "--cov=plotcontext --cov-report=term-missing --cov-report=html"
+
+addopts = [
+    "-ra",               # Show a summary of skips, xfails, xpasses, etc.
+    "--strict-config",   # Fail on invalid or unknown pytest configuration.
+    "--strict-markers",  # Fail on unregistered/typoed pytest markers.
+    "--cov=plotcontext", # Measure coverage for the plotcontext package.
+    "--cov-branch",      # Measure branch coverage in addition to line coverage.
+    # "--cov-report=term-missing:skip-covered", # Show uncovered lines; omit files at 100% coverage.
+    "--cov-report=html:htmlcov", # Generate an HTML coverage report in ./htmlcov.
+    # "--mpl",                     # Enable pytest-mpl image comparison against baselines.
+]
+
+# Fail early with a clear error if these plugins are not installed.
+required_plugins = ["pytest-cov", "pytest-mpl"]
+
+# Reference images used by pytest-mpl for regression comparisons.
 mpl-baseline-path = "tests/baseline"
+
+# Store generated/current/diff images from pytest-mpl here.
 mpl-results-path = "tests/mpl-results"
+
+# Optional: generate an HTML summary of matplotlib comparison results.
+# This also causes result images to be saved for passing tests.
+mpl-generate-summary = "html"
+
+# [tool.pytest.ini_options]
+# testpaths = ["tests"]
+# addopts = "--cov=plotcontext --cov-report=term-missing --cov-report=html --mpl-generate-summary=html"
+# mpl-baseline-path = "tests/baseline"
+# mpl-results-path = "tests/mpl-results"
 
 [tool.coverage.run]
 source = ["src/plotcontext"]

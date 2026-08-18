@@ -14,10 +14,13 @@ def test_enter_creates_and_returns_pyplot():
     assert not plt.fignum_exists(ctx.figure.number)
 
 
+@pytest.mark.mpl_image_compare(style="default")
 def test_figure_kwargs_forwarded():
     ctx = FigureContext(figsize=(3, 2))
     with ctx:
         assert tuple(ctx.figure.get_size_inches()) == (3.0, 2.0)
+        ctx.figure.subplots().plot([0, 1, 2], [0, 1, 4])
+    return ctx.figure
 
 
 def test_exception_closes_without_show():

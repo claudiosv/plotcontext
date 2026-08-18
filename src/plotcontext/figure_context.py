@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any, Literal
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
+from plotcontext._backend import can_show
+
 if TYPE_CHECKING:
     from types import ModuleType, TracebackType
 
@@ -25,7 +27,7 @@ class FigureContext:
         traceback: TracebackType | None,
     ) -> Literal[False]:
         try:
-            if exc_type is None:
+            if exc_type is None and can_show():
                 plt.show()
         finally:
             if self.figure is not None:
