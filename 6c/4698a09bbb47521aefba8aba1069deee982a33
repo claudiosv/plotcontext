@@ -1,0 +1,82 @@
+tests/test_figure_context.py
+  s_b88e5e26b3ffa6::t_cbc2f235a02c9e 1,3-29
+  s_b88e5e26b3ffa6::t_4a4e23b47c2a10 2
+tests/conftest.py
+  s_b88e5e26b3ffa6::t_7bc88b6209f579 1-13
+tests/test_plot_context_abc.py
+  s_b88e5e26b3ffa6::t_f32981de48d4c6 1-69
+tests/test_theming_vscode.py
+  s_b88e5e26b3ffa6::t_5d69493f062a7b 149-151,167,169,178,196,199
+  s_b88e5e26b3ffa6::t_26db95855abf0d 1-148,152-166,168,170-177,179-195,197-198,200-223
+src/plotcontext/plot_context_font_tools.py
+  s_b88e5e26b3ffa6::t_5ebe714c457ec6 126-128
+  s_b88e5e26b3ffa6::t_24823e5273cb7e 208
+  s_b88e5e26b3ffa6::t_5ad9e676017dc6 86-87
+tests/test_polars_plot_context.py
+  s_b88e5e26b3ffa6::t_19a8050c816e89 206
+  s_b88e5e26b3ffa6::t_2f6c367adc6a57 512
+  s_b88e5e26b3ffa6::t_2e2beb0f2fdaf5 43-44
+  s_b88e5e26b3ffa6::t_11472056014ace 179-182,184-205,207-229
+  s_b88e5e26b3ffa6::t_56bdf5bdfa9824 330-342,347
+  s_b88e5e26b3ffa6::t_d9fce8940f5b8d 321-329,343-346,348-384
+  s_b88e5e26b3ffa6::t_a8757029f59683 1,3-42,45-165,230-320,385-433,450-477,479-482,515-525
+  s_b88e5e26b3ffa6::t_faf64d7e020849 434-449
+  s_b88e5e26b3ffa6::t_ceaeb77734c730 478
+  s_b88e5e26b3ffa6::t_486707bd0f79c9 166-178,183
+  s_b88e5e26b3ffa6::t_7dcc7895b571d8 2
+  s_b88e5e26b3ffa6::t_b8f461e672df1d 483-511,513-514
+tests/test_plot_context_font_tools.py
+  s_b88e5e26b3ffa6::t_ca57a732256b9a 1-106,110-120
+  s_b88e5e26b3ffa6::t_5d0aa3c2685064 107-109
+tests/test_plot_context_builder.py
+  s_b88e5e26b3ffa6::t_b039d80c32d410 1-239
+tests/test_context_figure.py
+  s_b88e5e26b3ffa6::t_c9e10098adbb9b 1-44
+src/plotcontext/plot_context_builder.py
+  s_b88e5e26b3ffa6::t_e1a936dde3c723 135-142
+src/plotcontext/__init__.py
+  s_b88e5e26b3ffa6::t_191f17899cbefa 1-2,5
+src/plotcontext/polars_plot_context.py
+  s_b88e5e26b3ffa6::t_e1a936dde3c723 298-304,420-430,787-793,834-843
+  s_b88e5e26b3ffa6::t_8865988294dbc1 124,318,323,554,800,805,973,996,1043,1063,1116
+tests/test_auto_emoji.py
+  s_b88e5e26b3ffa6::t_b8c08950c4392a 39,52
+  s_b88e5e26b3ffa6::t_dc255bd5165443 68,72-74
+  s_b88e5e26b3ffa6::t_7f4ee11019be31 1-37,40-44,46-51,53-67,69-71,75-123
+  s_b88e5e26b3ffa6::t_3c1c11ed48a747 38,45
+src/plotcontext/theming/vscode.py
+  s_b88e5e26b3ffa6::t_adbe7e80c4e037 9
+  s_b88e5e26b3ffa6::t_b54226b95d6384 146
+  s_b88e5e26b3ffa6::t_1c343755fc9689 16-17,20
+  s_b88e5e26b3ffa6::t_89f495761f4831 127-128
+  s_b88e5e26b3ffa6::t_e1a936dde3c723 19,21,74-76,80-82,120-122
+pyproject.toml
+  h_aceaeb4e74d6dc 2-3
+  s_b88e5e26b3ffa6::t_c42e9816084a54 19
+  s_b88e5e26b3ffa6::t_bf1c827ab6a83f 1,4
+  s_b88e5e26b3ffa6::t_2216270ed86c3d 33,38-39
+  s_b88e5e26b3ffa6::t_690d2bc789c4e4 40
+uv.lock
+  s_b88e5e26b3ffa6::t_162beb14596ae6 10-18,449,451
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6c4698a09bbb47521aefba8aba1069deee982a33",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_b88e5e26b3ffa6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e169f11d-7332-4650-875c-1aa34387f98f",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
