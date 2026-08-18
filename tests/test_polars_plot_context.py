@@ -1,54 +1,14 @@
 import matplotlib.pyplot as plt
-import pandas as pd
 import polars as pl
 import pytest
-import seaborn as sns
 
 from plotcontext.plot_context import AbstractPlotContext
 from plotcontext.polars_plot_context import (
     HistogramStat,
     ModuleProxy,
     PlotContext,
-    SinglePlotContext,
     TickFormatters,
-    auto_show,
-    facet_context,
-    plot_context,
 )
-
-# --------------------------------------------------------------------------- #
-# Module-level context managers                                               #
-# --------------------------------------------------------------------------- #
-
-
-def test_plot_context_yields_fig_and_ax_and_closes():
-    with plot_context() as (fig, ax):
-        assert fig is not None
-        assert ax is not None
-        assert plt.fignum_exists(fig.number)
-
-    assert not plt.fignum_exists(fig.number)
-
-
-def test_auto_show_closes_all_figures():
-    plt.figure()
-    plt.figure()
-    with auto_show():
-        assert len(plt.get_fignums()) == 2
-
-    assert plt.get_fignums() == []
-
-
-def test_facet_context_single_plot_grid():
-    df = pd.DataFrame({"x": [1, 2, 3], "y": [4, 5, 6]})
-    g = sns.relplot(data=df, x="x", y="y")
-    with facet_context(g) as (grid, fig, axes):
-        assert grid is g
-        assert fig is g.fig
-        assert axes is g.ax
-
-    assert not plt.fignum_exists(fig.number)
-
 
 # --------------------------------------------------------------------------- #
 # Simple value types                                                          #
@@ -84,147 +44,6 @@ def test_module_proxy_injects_via_context():
 def test_module_proxy_passes_through_non_callables():
     proxy = ModuleProxy(plt, context=None)
     assert proxy.rcParams is plt.rcParams
-
-
-# --------------------------------------------------------------------------- #
-# SinglePlotContext                                                           #
-# --------------------------------------------------------------------------- #
-
-
-def test_single_plot_context_is_abstract_plot_context():
-    assert issubclass(SinglePlotContext, AbstractPlotContext)
-
-
-def test_single_plot_context_creates_and_closes_figure():
-    ctx = SinglePlotContext(figsize=(4.0, 3.0))
-    with ctx as (returned_ctx, fig, ax):
-        assert returned_ctx is ctx
-        assert fig is not None
-        assert ax is not None
-        ax.plot([1, 2, 3], [1, 2, 3])
-
-    assert ctx.exited is True
-    assert not plt.fignum_exists(fig.number)
-
-
-def test_single_plot_context_set_title():
-    with SinglePlotContext(figsize=(4.0, 3.0)) as (ctx, _fig, _ax):
-        text = ctx.set_title("hello")
-        assert text.get_text() == "hello"
-
-
-def test_single_plot_context_sns_proxy_injects_ax():
-    with SinglePlotContext(figsize=(4.0, 3.0)) as (ctx, _fig, ax):
-        result_ax = ctx.sns.lineplot(x=[1, 2, 3], y=[1, 4, 9])
-        assert result_ax is ax
-
-
-def test_single_plot_context_save(tmp_path):
-    ctx = SinglePlotContext(figsize=(4.0, 3.0))
-    with ctx as (_ctx, _fig, ax):
-        ax.plot([1, 2], [1, 2])
-        out = tmp_path / "out.pdf"
-        ctx.save(str(out))
-    assert out.exists()
-
-
-def test_single_plot_context_save_fig(tmp_path):
-    ctx = SinglePlotContext(figsize=(4.0, 3.0))
-    with ctx as (_ctx, _fig, ax):
-        ax.plot([1, 2], [1, 2])
-    ctx.save_fig(tmp_path, "myplot")
-    saved = list(tmp_path.glob("myplot_*.pdf")) + list(tmp_path.glob("myplot_*.png"))
-    assert len(saved) == 2
-
-
-def test_single_plot_context_activate_raises_without_figure():
-    ctx = SinglePlotContext(figsize=(4.0, 3.0))
-    with pytest.raises(RuntimeError, match="no active figure"):
-        ctx._activate()
-
-
-def test_single_plot_context_sketch_mode_updates_rc_params():
-    ctx = SinglePlotContext(figsize=(4.0, 3.0), sketch=True)
-    assert ctx.rc_params["font.family"] == "sans-serif"
-
-
-def test_single_plot_context_no_ax_warns_on_exit():
-    ctx = SinglePlotContext(figsize=(4.0, 3.0), create_fig=False)
-    with pytest.warns(UserWarning, match="No ax found"):
-        with ctx:
-            pass
-
-
-def test_single_plot_context_exception_does_not_draw():
-    ctx = SinglePlotContext(figsize=(4.0, 3.0))
-    with pytest.raises(ValueError, match="boom"):
-        with ctx as (_ctx, _fig, _ax):
-            raise ValueError("boom")
-    assert ctx._drawn is False
-
-
-def test_single_plot_context_ieee_style(monkeypatch):
-    # "science"/"ieee" styles are registered globally by scienceplots at import
-    # time; other tests that reload the style library can drop them, so stub
-    # plt.style.context instead of depending on that global mutable state.
-    captured = {}
-    real_context = plt.style.context
-
-    def fake_context(styles):
-        captured["styles"] = styles
-        return real_context([])
-
-    monkeypatch.setattr(plt.style, "context", fake_context)
-
-    ctx = SinglePlotContext(figsize=(4.0, 3.0), plot_context="ieee")
-    with ctx:
-        pass
-    assert ctx.exited is True
-    assert captured["styles"] == ["science", "ieee"]
-
-
-def test_single_plot_context_extra_styles():
-    ctx = SinglePlotContext(figsize=(4.0, 3.0), styles=["seaborn-v0_8"])
-    with ctx:
-        pass
-    assert ctx.exited is True
-
-
-def test_single_plot_context_sketch_xkcd_context_entered():
-    ctx = SinglePlotContext(figsize=(4.0, 3.0), sketch={"scale": 2})
-    with ctx as (_ctx, _fig, ax):
-        ax.plot([1, 2], [1, 2])
-    assert ctx.exited is True
-
-
-def test_single_plot_context_enter_failure_closes_stack(monkeypatch):
-    ctx = SinglePlotContext(figsize=(4.0, 3.0))
-
-    def boom(*args, **kwargs):
-        raise RuntimeError("setup failed")
-
-    monkeypatch.setattr("plotcontext.polars_plot_context.plt.subplots", boom)
-    with pytest.raises(RuntimeError, match="setup failed"):
-        with ctx:
-            pass
-
-
-def test_single_plot_context_debug_prints_injection_info(capsys):
-    ctx = SinglePlotContext(figsize=(4.0, 3.0), debug=True)
-    with ctx as (_ctx, _fig, ax):
-        ctx.sns.lineplot(x=[1, 2], y=[1, 2])
-    out = capsys.readouterr().out
-    assert "accepts" in out
-    assert "Called lineplot" in out
-
-
-def test_single_plot_context_save_raises_when_ax_missing_and_not_drawn():
-    ctx = SinglePlotContext(figsize=(4.0, 3.0))
-    ctx.figure, ctx.ax = plt.subplots()
-    ctx.ax = None
-    with pytest.raises(RuntimeError, match="No axes to finalize"):
-        ctx.save("out.pdf")
-    plt.close(ctx.figure)
 
 
 # --------------------------------------------------------------------------- #

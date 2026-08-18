@@ -96,10 +96,6 @@ class PlotContextFontTools:
                 # 4. The "Gold Standard": ICML/ACM Style
                 # This is entered last to ensure your exact figure size,
                 # LaTeX fonts, and PDF settings override everything else.
-                # icml_params = get_icml_style()
-                # icml_params.update({
-                #     "figure.figsize": (self.fig_x, self.fig_y / self.fig_x)
-                # })
                 icml_params = {
                     "axes.labelsize": 9,
                     "axes.titlepad": 0,
@@ -117,22 +113,13 @@ class PlotContextFontTools:
                     "legend.borderpad": 0,
                     "legend.fontsize": 9,
                     "lines.markersize": 3,
-                    # "pdf.fonttype": 42,
-                    # "ps.fonttype": 42,
                     "savefig.bbox": "tight",
                     "savefig.pad_inches": 0.01,
                     "savefig.transparent": True,
-                    # "text.usetex": True,
-                    # "text.latex.preamble": (
-                    #     r"\usepackage{libertine} \usepackage[libertine]{newtxmath}"
-                    # ),
                     "xtick.labelsize": 9,
                     "ytick.labelsize": 9,
                 }
                 self.stack.enter_context(plt.rc_context(rc=icml_params))
-                # self.stack.enter_context(
-                #     icml_style(width=self.fig_x, height_ratio=self.fig_y / self.fig_x)
-                # )
                 print(
                     f"Applied ACM/ICML style with figure size {self.fig_x}x{self.fig_y}"
                 )
@@ -145,8 +132,6 @@ class PlotContextFontTools:
             # We use constrained_layout here as it's superior for sub-3.25in plots
             self.figure, self.ax = plt.subplots(
                 figsize=(self.fig_x * self.fig_scale, self.fig_y * self.fig_scale),
-                # dpi=self.dpi,
-                # constrained_layout=True,
             )
 
         except Exception:
@@ -210,15 +195,9 @@ class PlotContextFontTools:
             raise RuntimeError("No figure to save. Ensure you're within the context.")
 
         # Default savefig kwargs for publication quality
-        default_kwargs = {
-            "format": "pdf",
-            # "bbox_inches": "tight",
-            # "pad_inches": 0.01,
-            # "dpi": self.dpi,
-        }
+        default_kwargs = {"format": "pdf"}
         default_kwargs.update(save_kwargs)
 
-        # self.__enter__()
         if not self._finalized:
             with self.stack:  # This automatically calls __exit__ on all stored contexts
                 self._finalize_plot()

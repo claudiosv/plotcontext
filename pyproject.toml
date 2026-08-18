@@ -35,6 +35,8 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--cov=plotcontext --cov-report=term-missing --cov-report=html"
+mpl-baseline-path = "tests/baseline"
+mpl-results-path = "tests/mpl-results"
 
 [tool.coverage.run]
 source = ["src/plotcontext"]

@@ -79,7 +79,7 @@ def set_emoji_xticklabels(
         else:
             # No emoji found, keep the original text
             offset = TextArea(text, textprops={"size": zoom * 125})
-            new_labels.append("")  # box_content)
+            new_labels.append("")
 
         ab = AnnotationBbox(
             offset,
