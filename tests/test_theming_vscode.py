@@ -4,12 +4,43 @@ import pytest
 
 from plotcontext.theming.vscode import (
     JSONWithCommentsDecoder,
+    _default_extensions_dir,
+    _vscode_user_settings_path,
     get_extension_filepath,
     get_rc_params,
     get_theme_name,
     get_token_color,
     set_theme,
 )
+
+
+@pytest.mark.parametrize(
+    ("system", "expected_parts"),
+    [
+        ("Darwin", ("Library", "Application Support", "Code", "User")),
+        ("Windows", ("Code", "User")),
+        ("Linux", ("Code", "User")),
+    ],
+)
+def test_vscode_user_settings_path_per_platform(monkeypatch, system, expected_parts):
+    monkeypatch.setattr("plotcontext.theming.vscode.platform.system", lambda: system)
+    path = _vscode_user_settings_path()
+    assert path.name == "settings.json"
+    for part in expected_parts:
+        assert part in path.parts
+
+
+def test_default_extensions_dir_respects_env_override(monkeypatch, tmp_path):
+    monkeypatch.setenv("VSCODE_EXTENSIONS_DIR", str(tmp_path))
+    assert _default_extensions_dir() == tmp_path
+
+
+@pytest.mark.parametrize("system", ["Darwin", "Windows", "Linux"])
+def test_default_extensions_dir_per_platform(monkeypatch, system):
+    monkeypatch.delenv("VSCODE_EXTENSIONS_DIR", raising=False)
+    monkeypatch.setattr("plotcontext.theming.vscode.platform.system", lambda: system)
+    path = _default_extensions_dir()
+    assert path.name == "extensions"
 
 
 def test_json_with_comments_decoder_strips_line_comments():
@@ -23,6 +54,26 @@ def test_json_with_comments_decoder_strips_line_comments():
     """
     result = json.loads(raw, cls=JSONWithCommentsDecoder)
     assert result == {"a": 1, "b": "// not a comment, it's a string", "c": [1, 2, 3]}
+
+
+def test_json_with_comments_decoder_strips_block_comments():
+    raw = """
+    {
+        /* a block comment
+           spanning multiple lines */
+        "a": 1,
+        "b": "/* not a comment, it's a string */",
+        /* another */ "c": 2,
+    }
+    """
+    result = json.loads(raw, cls=JSONWithCommentsDecoder)
+    assert result == {"a": 1, "b": "/* not a comment, it's a string */", "c": 2}
+
+
+def test_json_with_comments_decoder_handles_escaped_quotes():
+    raw = r"""{"a": "she said \"hi // there\""}"""
+    result = json.loads(raw, cls=JSONWithCommentsDecoder)
+    assert result == {"a": 'she said "hi // there"'}
 
 
 def test_get_token_color_prefers_semantic_token_colors():
@@ -53,7 +104,7 @@ def test_get_theme_name_reads_configured_theme(tmp_path, monkeypatch):
     settings_path.write_text(json.dumps({"workbench.colorTheme": "My Theme"}))
 
     monkeypatch.setattr(
-        "plotcontext.theming.vscode.Path.expanduser", lambda self: settings_path
+        "plotcontext.theming.vscode.VSCODE_USER_SETTINGS_PATH", settings_path
     )
 
     json_settings, theme_name = get_theme_name()
@@ -66,7 +117,7 @@ def test_get_theme_name_defaults_to_dark_modern(tmp_path, monkeypatch):
     settings_path.write_text(json.dumps({}))
 
     monkeypatch.setattr(
-        "plotcontext.theming.vscode.Path.expanduser", lambda self: settings_path
+        "plotcontext.theming.vscode.VSCODE_USER_SETTINGS_PATH", settings_path
     )
 
     _json_settings, theme_name = get_theme_name()

@@ -1,51 +1,122 @@
+"""Derive matplotlib/seaborn rc params from the active VS Code color theme."""
+
 import json
+import os
+import platform
 import re
 from pathlib import Path
 
 import seaborn as sns
 
+DEFAULT_THEME_NAME = "dark_modern"
+
+
+def _vscode_user_settings_path() -> Path:
+    """Location of VS Code's global ``settings.json`` for the current OS."""
+    system = platform.system()
+    if system == "Darwin":
+        base = Path("~/Library/Application Support").expanduser()
+    elif system == "Windows":
+        base = Path(os.environ.get("APPDATA", "~/AppData/Roaming")).expanduser()
+    else:  # Linux and other POSIX systems
+        base = Path(os.environ.get("XDG_CONFIG_HOME", "~/.config")).expanduser()
+    return base / "Code" / "User" / "settings.json"
+
+
+def _default_extensions_dir() -> Path:
+    """Best-effort location of VS Code's bundled (built-in) extensions.
+
+    Set the ``VSCODE_EXTENSIONS_DIR`` environment variable to override this,
+    e.g. on Linux where the install path varies by package manager.
+    """
+    if override := os.environ.get("VSCODE_EXTENSIONS_DIR"):
+        return Path(override).expanduser()
+
+    system = platform.system()
+    if system == "Darwin":
+        return Path(
+            "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions"
+        )
+    if system == "Windows":
+        base = Path(os.environ.get("LOCALAPPDATA", "~/AppData/Local")).expanduser()
+        return (
+            base / "Programs" / "Microsoft VS Code" / "resources" / "app" / "extensions"
+        )
+    # Linux: covers the common apt/dnf package path; snap/flatpak installs
+    # differ, hence the VSCODE_EXTENSIONS_DIR override above.
+    return Path("/usr/share/code/resources/app/extensions")
+
+
+# Bundled (built-in) extensions, e.g. the "theme-defaults" package.
+DEFAULT_EXTENSIONS_DIR = _default_extensions_dir()
+# User-installed extensions; same relative layout on macOS, Linux, and Windows.
+USER_EXTENSIONS_DIR = Path("~/.vscode/extensions").expanduser()
+VSCODE_USER_SETTINGS_PATH = _vscode_user_settings_path()
+
+
+def _strip_jsonc(text: str) -> str:
+    """Strip ``//`` and ``/* */`` comments from JSONC text, then trailing commas.
+
+    Respects string literals (including escaped quotes) so that "//" or "/*"
+    inside a string value is left untouched.
+    """
+    out = []
+    in_string = False
+    i, n = 0, len(text)
+    while i < n:
+        char = text[i]
+        if in_string:
+            out.append(char)
+            if char == "\\" and i + 1 < n:
+                out.append(text[i + 1])
+                i += 2
+                continue
+            in_string = char != '"'
+            i += 1
+            continue
+
+        if char == '"':
+            in_string = True
+            out.append(char)
+            i += 1
+        elif text[i : i + 2] == "//":
+            i = text.find("\n", i)
+            if i == -1:
+                break
+        elif text[i : i + 2] == "/*":
+            end = text.find("*/", i + 2)
+            i = n if end == -1 else end + 2
+        else:
+            out.append(char)
+            i += 1
+
+    return re.sub(r",(\s*[}\]])", r"\1", "".join(out))
+
 
 class JSONWithCommentsDecoder(json.JSONDecoder):
-    """JSON decoder that automatically deals with comments in vscode-esque settings"""
-
-    def __init__(self, **kw):
-        super().__init__(**kw)
+    """JSON decoder tolerant of VS Code's JSONC dialect (comments, trailing commas)."""
 
     def decode(self, s: str):
-        lines = []
-        for line in s.split("\n"):
-            if line.lstrip(" ").startswith("//"):
-                continue
-            lines.append(
-                re.sub(r'("(?:[^"\\]|\\.)*")|//.*$', lambda m: m.group(1) or "", line)
-            )
-        s = "\n".join(lines)
-        s = re.sub(r",\s*}", "}", s)  # Remove trailing commas
-        s = re.sub(r",\s*]", "]", s)  # Remove trailing commas in arrays
-        return super().decode(s)
+        return super().decode(_strip_jsonc(s))
+
+
+def get_token_color(settings, token):
+    try:
+        return settings["semanticTokenColors"][token]
+    except KeyError:
+        pass
+    for t in settings["tokenColors"]:
+        if token in t.get("scope", []):
+            return t["settings"]["foreground"]
 
 
 def get_theme_name():
-    """gets the active theme name from user's settings"""
-    global_settings_path = Path(
-        "~/Library/Application Support/Code/User/settings.json"
-    ).expanduser()
-
-    with global_settings_path.open("r") as file:
+    """Gets the active theme name from the user's VS Code settings."""
+    with VSCODE_USER_SETTINGS_PATH.open("r") as file:
         json_settings = json.load(file, cls=JSONWithCommentsDecoder)
 
     theme_name = json_settings.get("workbench.colorTheme", None)
-    if not theme_name:
-        return json_settings, "dark_modern"
-    return json_settings, theme_name
-
-
-# Bundled (built-in) extensions live inside the app bundle on macOS
-DEFAULT_EXTENSIONS_DIR = Path(
-    "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions"
-)
-# User-installed extensions
-USER_EXTENSIONS_DIR = Path("~/.vscode/extensions").expanduser()
+    return json_settings, (theme_name or DEFAULT_THEME_NAME)
 
 
 def get_extension_filepath(theme_name):
@@ -88,21 +159,11 @@ def get_extension_filepath(theme_name):
     raise KeyError("Theme extension folder was not found")
 
 
-def get_token_color(settings, token):
-    try:
-        return settings["semanticTokenColors"][token]
-    except KeyError:
-        pass
-    for t in settings["tokenColors"]:
-        if token in t.get("scope", []):
-            return t["settings"]["foreground"]
-
-
 def get_rc_params() -> dict:
     """Compute matplotlib rc params from the active VS Code color theme."""
     json_settings, theme_name = get_theme_name()
 
-    if theme_name != "dark_modern":
+    if theme_name != DEFAULT_THEME_NAME:
         extension_path = get_extension_filepath(theme_name)
     else:
         extension_path = (
@@ -124,15 +185,13 @@ def get_rc_params() -> dict:
         bg_color = theme_settings["colors"].get("editor.background", "#1E1E1E")
 
     text_color = theme_settings["colors"].get("editor.foreground", "#FFFFFF")
-    get_token_color(theme_settings, "string")
-    get_token_color(theme_settings, "keyword")
     comment_color = get_token_color(theme_settings, "comment")
 
     return {
         "axes.facecolor": bg_color,
         "figure.facecolor": bg_color,
-        "text.color": text_color,  # function_color,
-        "axes.labelcolor": text_color,  # string_color,
+        "text.color": text_color,
+        "axes.labelcolor": text_color,
         "xtick.color": text_color,
         "ytick.color": text_color,
         "axes.titlecolor": text_color,
