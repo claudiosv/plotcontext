@@ -1,0 +1,26 @@
+pyproject.toml
+  s_b88e5e26b3ffa6::t_b3678d9c7a9057 22-24,32
+uv.lock
+  s_b88e5e26b3ffa6::t_7eb76f7328f6bc 470-474,477
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0e683a139cf1e0bc26501cea00f5d5e80526eb2c",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_b88e5e26b3ffa6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e169f11d-7332-4650-875c-1aa34387f98f",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
