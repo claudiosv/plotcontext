@@ -1,0 +1,27 @@
+tests/test_theming_vscode.py
+  s_b88e5e26b3ffa6::t_8f31931d66cd17 342-344
+  s_b88e5e26b3ffa6::t_d52a9ebf7b79cf 228-284
+  s_b88e5e26b3ffa6::t_6724a2050d8978 322-323,333-341,345-348
+src/plotcontext/theming/vscode.py
+  s_b88e5e26b3ffa6::t_8b20927c4df964 165-182
+  s_b88e5e26b3ffa6::t_e169892c411899 8,12
+  s_b88e5e26b3ffa6::t_0eaa46b9d56d54 209-216,220-221
+  s_b88e5e26b3ffa6::t_48fe6a46743048 231-243
+  s_b88e5e26b3ffa6::t_ae0adfe73f9928 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0b38916f73f2d76265537c14b367bc93687b57ff",
+  "prompts": {},
+  "sessions": {
+    "s_b88e5e26b3ffa6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e169f11d-7332-4650-875c-1aa34387f98f",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
