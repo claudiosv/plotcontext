@@ -457,7 +457,6 @@ name = "plotcontext"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "clipin" },
     { name = "emoji" },
     { name = "json-with-comments" },
     { name = "matplotlib" },
@@ -468,8 +467,14 @@ dependencies = [
     { name = "statsmodels" },
 ]
 
+[package.optional-dependencies]
+clipboard = [
+    { name = "clipin" },
+]
+
 [package.dev-dependencies]
 dev = [
+    { name = "plotcontext", extra = ["clipboard"] },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-mpl" },
