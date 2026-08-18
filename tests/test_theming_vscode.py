@@ -3,7 +3,6 @@ import json
 import pytest
 
 from plotcontext.theming.vscode import (
-    JSONWithCommentsDecoder,
     _default_extensions_dir,
     _vscode_user_settings_path,
     get_extension_filepath,
@@ -43,37 +42,31 @@ def test_default_extensions_dir_per_platform(monkeypatch, system):
     assert path.name == "extensions"
 
 
-def test_json_with_comments_decoder_strips_line_comments():
-    raw = """
-    {
-        // a leading comment
-        "a": 1, // trailing comment
-        "b": "// not a comment, it's a string",
-        "c": [1, 2, 3,],
-    }
-    """
-    result = json.loads(raw, cls=JSONWithCommentsDecoder)
-    assert result == {"a": 1, "b": "// not a comment, it's a string", "c": [1, 2, 3]}
+def test_get_theme_name_parses_settings_with_comments_and_trailing_commas(
+    tmp_path, monkeypatch
+):
+    settings_path = tmp_path / "settings.json"
+    settings_path.write_text(
+        """
+        {
+            // a leading comment
+            "workbench.colorTheme": "My Theme", // trailing comment
+            "editor.fontFamily": "// not a comment, it's a string",
+            /* a block comment
+               spanning multiple lines */
+            "editor.fontSize": 14,
+        }
+        """
+    )
 
+    monkeypatch.setattr(
+        "plotcontext.theming.vscode.VSCODE_USER_SETTINGS_PATH", settings_path
+    )
 
-def test_json_with_comments_decoder_strips_block_comments():
-    raw = """
-    {
-        /* a block comment
-           spanning multiple lines */
-        "a": 1,
-        "b": "/* not a comment, it's a string */",
-        /* another */ "c": 2,
-    }
-    """
-    result = json.loads(raw, cls=JSONWithCommentsDecoder)
-    assert result == {"a": 1, "b": "/* not a comment, it's a string */", "c": 2}
-
-
-def test_json_with_comments_decoder_handles_escaped_quotes():
-    raw = r"""{"a": "she said \"hi // there\""}"""
-    result = json.loads(raw, cls=JSONWithCommentsDecoder)
-    assert result == {"a": 'she said "hi // there"'}
+    json_settings, theme_name = get_theme_name()
+    assert theme_name == "My Theme"
+    assert json_settings["editor.fontFamily"] == "// not a comment, it's a string"
+    assert json_settings["editor.fontSize"] == 14
 
 
 def test_get_token_color_prefers_semantic_token_colors():

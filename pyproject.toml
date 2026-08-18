@@ -17,6 +17,7 @@ dependencies = [
     "statsmodels>=0.14.6",
     "emoji>=2.15.0",
     "clipin>=1.0.0",
+    "json-with-comments>=1.2.10",
 ]
 
 [dependency-groups]
