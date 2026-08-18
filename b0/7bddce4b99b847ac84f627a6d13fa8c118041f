@@ -1,0 +1,48 @@
+src/plotcontext/plot_context.py
+  s_b88e5e26b3ffa6::t_2b27a685c888c2 1,3-5,8-10,12-15,18-20,22-24,26-28,30-32,34-35,38,40,42-44
+  s_b88e5e26b3ffa6::t_ded17b3a1eb421 36
+src/plotcontext/theming/vscode.py
+  s_b88e5e26b3ffa6::t_1d44fa383863c4 95-139
+  s_b88e5e26b3ffa6::t_ec4572edf81ac3 92-94
+  s_b88e5e26b3ffa6::t_12b34ec8dce2f5 1-91
+src/plotcontext/polars_plot_context.py
+  s_b88e5e26b3ffa6::t_fcd74f8820eda5 24-25
+  s_b88e5e26b3ffa6::t_574072d46cd275 173
+  s_b88e5e26b3ffa6::t_0147a465710864 659
+src/plotcontext/figure_context.py
+  h_aceaeb4e74d6dc 1-34
+src/plotcontext/context_figure.py
+  h_aceaeb4e74d6dc 13
+  s_b88e5e26b3ffa6::t_59372b4d9ec0d9 1-12,14-86
+src/plotcontext/__init__.py
+  h_aceaeb4e74d6dc 2
+pyproject.toml
+  h_aceaeb4e74d6dc 14
+uv.lock
+  s_b88e5e26b3ffa6::t_6d1b4dbcfab720 130-138,442
+src/plotcontext/auto_emoji.py
+  s_b88e5e26b3ffa6::t_6b87648fab8123 1-100
+src/plotcontext/plot_context_font_tools.py
+  s_b88e5e26b3ffa6::t_4dbac2a9b1e861 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b07bddce4b99b847ac84f627a6d13fa8c118041f",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_b88e5e26b3ffa6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e169f11d-7332-4650-875c-1aa34387f98f",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
