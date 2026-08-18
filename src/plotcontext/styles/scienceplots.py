@@ -107,7 +107,7 @@ SCIENCEPLOTS_STYLES: dict[str, Style] = {
         "axes.axisbelow": True,
         "axes.grid": True,
         "grid.alpha": 0.5,
-        "grid.color": "k",
+        "grid.color": "black",
         "grid.linestyle": "--",
         "grid.linewidth": 0.5,
         "legend.fancybox": True,
@@ -532,7 +532,7 @@ SCIENCEPLOTS_STYLES: dict[str, Style] = {
         "ytick.labelsize": 7.0,
     },
     "ieee": {
-        "axes.prop_cycle": cycler("color", ["k", "r", "b", "g"])
+        "axes.prop_cycle": cycler("color", ["black", "red", "blue", "green"])
         + cycler("linestyle", ["-", "--", ":", "-."]),
         "figure.dpi": 600.0,
         "figure.figsize": [3.3, 2.5],

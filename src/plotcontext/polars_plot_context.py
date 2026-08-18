@@ -14,6 +14,8 @@ import polars as pl
 import seaborn as sns
 from matplotlib import rcParams, ticker
 from matplotlib.axes import Axes
+from matplotlib.collections import PolyCollection
+from matplotlib.patches import PathPatch
 from matplotlib.ticker import ScalarFormatter
 
 from plotcontext._backend import can_show
@@ -270,16 +272,14 @@ class PlotContext(AbstractPlotContext):
         else:
             # Unlike sns.set_theme(), all of these changes are scoped and will
             # be restored by the ExitStack.
-            contexts.extend(
-                [
-                    sns.plotting_context(
-                        context=self.plot_context,
-                        font_scale=self.font_scale,
-                    ),
-                    sns.axes_style(self.style),
-                    self._palette,
-                ]
-            )
+            contexts.extend([
+                sns.plotting_context(
+                    context=self.plot_context,
+                    font_scale=self.font_scale,
+                ),
+                sns.axes_style(self.style),
+                self._palette,
+            ])
 
         if self.styles:
             contexts.append(plt.style.context(resolve_styles(self.styles)))
@@ -380,7 +380,9 @@ class PlotContext(AbstractPlotContext):
                 raise ValueError(msg)
 
             if func.__name__ in {"boxplot", "violinplot"}:
-                return self._apply_boxplot_annotations(func, annotate, *args, **kwargs)
+                return self._apply_categorical_plot_annotations(
+                    func, annotate, *args, **kwargs
+                )
             msg = f"Magic annotate not supported for {func.__name__}"
             raise ValueError(msg)
 
@@ -451,8 +453,11 @@ class PlotContext(AbstractPlotContext):
         clipin.copy(image_bytes, "image/png")
 
     @staticmethod
-    def _apply_boxplot_annotations(
-        func: Callable[..., Any], annotate: str, *args: Any, **kwargs: Any
+    def _apply_categorical_plot_annotations(
+        func: Callable[..., Any],
+        annotate: str,
+        *args: Any,
+        **kwargs: Any,
     ) -> tuple[Axes, pl.DataFrame]:
         orig_data: pl.DataFrame = kwargs["data"]
         hue = kwargs.get("hue")
@@ -460,7 +465,7 @@ class PlotContext(AbstractPlotContext):
         x = kwargs.get("x" if annotate == "y" else "y")
         x_align = kwargs.get("x_align", "median")
 
-        # Get unique values, preserving order of appearance if not explicitly provided
+        # Preserve appearance order unless explicit orders were supplied.
         hue_order = (
             kwargs.get(
                 "hue_order",
@@ -473,50 +478,62 @@ class PlotContext(AbstractPlotContext):
             kwargs["hue_order"] = hue_order
 
         order = kwargs.get(
-            "order", orig_data.get_column(y).unique(maintain_order=True).to_list()
+            "order",
+            orig_data.get_column(y).unique(maintain_order=True).to_list(),
         )
         kwargs["order"] = order
 
         data = orig_data.clone()
-        group = []
+        group = [y]
 
-        # Cast grouping variables to pl.Enum for deterministic ordering in the groupby
+        # Enum ordering makes group_by().sort() match seaborn's categorical order.
         data = data.with_columns(pl.col(y).cast(pl.Enum(order)))
-        group.append(y)
 
         if hue and hue_order is not None and hue != y:
             data = data.with_columns(pl.col(hue).cast(pl.Enum(hue_order)))
             group.append(hue)
 
-        # Determine aggregate expressions based on column presence
         if "count" in data.columns:
             agg_exprs = [
                 pl.col("count").sum().alias("n"),
                 getattr(pl.col(x), x_align)().alias("x_align"),
             ]
-            print("Using existing 'count' column for annotations")
         else:
             agg_exprs = [
                 pl.len().alias("n"),
                 getattr(pl.col(x), x_align)().alias("x_align"),
             ]
 
-        # Group, aggregate, and strictly sort by the Enums to match plot rendering order
         counts = data.group_by(group).agg(agg_exprs).sort(group)
 
         kwargs["data"] = data
         g: Axes = func(*args, **kwargs)
 
-        box_spacing = 1  # / len(hue_order) if hue_order else 1
+        if func.__name__ == "violinplot":
+            PlotContext._annotate_violin_plot(
+                g,
+                counts,
+                annotate=annotate,
+                group=group,
+            )
+            return g, counts
 
-        # iter_rows(named=True) is incredibly fast and yields standard Python dicts
+        if func.__name__ == "boxplot":
+            PlotContext._annotate_box_plot(
+                g,
+                counts,
+                annotate=annotate,
+            )
+            return g, counts
+
+        # Fallback for categorical plot types whose artist geometry isn't handled
+        # explicitly above.
         for i, row in enumerate(counts.iter_rows(named=True)):
             n = int(row["n"])
-            offset = i * box_spacing
 
-            x_loc = row["x_align"] + 0.5 if annotate == "y" else offset
-            y_loc = offset if annotate == "y" else row["x_align"] * 1.025
-            print(f"Annotating group {i} at ({x_loc}, {y_loc}) with n={n}")
+            x_loc = row["x_align"] + 0.5 if annotate == "y" else i
+            y_loc = i if annotate == "y" else row["x_align"] * 1.025
+
             g.text(
                 x_loc,
                 y_loc,
@@ -533,10 +550,224 @@ class PlotContext(AbstractPlotContext):
                 },
             )
 
-            # Keep tracking history for logic continuity (matching old implementation)
-            tuple(row[g_col] for g_col in group)
-
         return g, counts
+
+    @staticmethod
+    def _annotate_box_plot(
+        ax: Axes,
+        counts: pl.DataFrame,
+        *,
+        annotate: str,
+    ) -> None:
+        """Annotate hue-dodged boxes outward from each categorical center."""
+        boxes = [patch for patch in ax.patches if isinstance(patch, PathPatch)]
+
+        for box, row in zip(
+            boxes,
+            counts.iter_rows(named=True),
+            strict=True,
+        ):
+            vertices = box.get_path().vertices
+            x_coords = vertices[:, 0]
+            y_coords = vertices[:, 1]
+
+            x_center = (x_coords.min() + x_coords.max()) / 2
+            y_center = (y_coords.min() + y_coords.max()) / 2
+
+            if annotate == "y":
+                # Horizontal boxplot:
+                #
+                #     x = numeric
+                #     y = categorical
+                #
+                # Hue boxes are vertically dodged around categorical positions
+                # 0, 1, 2, ...
+                category_center = round(y_center)
+                box_height = y_coords.max() - y_coords.min()
+
+                direction = 1 if y_center > category_center else -1
+
+                label_x = x_center
+                label_y = y_center + direction * box_height * 0.4
+            else:
+                # Vertical boxplot:
+                #
+                #     x = categorical
+                #     y = numeric
+                #
+                # Hue boxes are horizontally dodged around categorical positions.
+                category_center = round(x_center)
+                box_width = x_coords.max() - x_coords.min()
+
+                direction = 1 if x_center > category_center else -1
+
+                label_x = x_center + direction * box_width * 0.4
+                label_y = y_center
+
+            n = int(row["n"])
+
+            ax.text(
+                label_x,
+                label_y,
+                f"n={n:,}",
+                ha="center",
+                va="center",
+                fontsize=10,
+                color="black",
+                bbox={
+                    "boxstyle": "round,pad=0.2",
+                    "fc": "white",
+                    "ec": "none",
+                    "alpha": 0.5,
+                },
+            )
+
+    # @staticmethod
+    # def _apply_categorical_plot_annotations(
+    #     func: Callable[..., Any], annotate: str, *args: Any, **kwargs: Any
+    # ) -> tuple[Axes, pl.DataFrame]:
+    #     orig_data: pl.DataFrame = kwargs["data"]
+    #     hue = kwargs.get("hue")
+    #     y = kwargs.get(annotate)
+    #     x = kwargs.get("x" if annotate == "y" else "y")
+    #     x_align = kwargs.get("x_align", "median")
+
+    #     # Get unique values, preserving order of appearance if not explicitly provided
+    #     hue_order = (
+    #         kwargs.get(
+    #             "hue_order",
+    #             orig_data.get_column(hue).unique(maintain_order=True).to_list(),
+    #         )
+    #         if hue
+    #         else None
+    #     )
+    #     if hue:
+    #         kwargs["hue_order"] = hue_order
+
+    #     order = kwargs.get(
+    #         "order", orig_data.get_column(y).unique(maintain_order=True).to_list()
+    #     )
+    #     kwargs["order"] = order
+
+    #     data = orig_data.clone()
+    #     group = []
+
+    #     # Cast grouping variables to pl.Enum for deterministic ordering in the groupby
+    #     data = data.with_columns(pl.col(y).cast(pl.Enum(order)))
+    #     group.append(y)
+
+    #     if hue and hue_order is not None and hue != y:
+    #         data = data.with_columns(pl.col(hue).cast(pl.Enum(hue_order)))
+    #         group.append(hue)
+
+    #     # Determine aggregate expressions based on column presence
+    #     if "count" in data.columns:
+    #         agg_exprs = [
+    #             pl.col("count").sum().alias("n"),
+    #             getattr(pl.col(x), x_align)().alias("x_align"),
+    #         ]
+    #         print("Using existing 'count' column for annotations")
+    #     else:
+    #         agg_exprs = [
+    #             pl.len().alias("n"),
+    #             getattr(pl.col(x), x_align)().alias("x_align"),
+    #         ]
+
+    #     # Group, aggregate, and strictly sort by the Enums to match plot rendering order
+    #     counts = data.group_by(group).agg(agg_exprs).sort(group)
+
+    #     kwargs["data"] = data
+    #     g: Axes = func(*args, **kwargs)
+
+    #     if func.__name__ == "violinplot":
+    #         PlotContext._annotate_violin_plot(g, counts, annotate=annotate)
+    #         return g, counts
+
+    #     box_spacing = 1  # / len(hue_order) if hue_order else 1
+
+    #     # iter_rows(named=True) is incredibly fast and yields standard Python dicts
+    #     for i, row in enumerate(counts.iter_rows(named=True)):
+    #         n = int(row["n"])
+    #         offset = i * box_spacing
+
+    #         x_loc = row["x_align"] + 0.5 if annotate == "y" else offset
+    #         y_loc = offset if annotate == "y" else row["x_align"] * 1.025
+    #         print(f"Annotating group {i} at ({x_loc}, {y_loc}) with n={n}")
+    #         g.text(
+    #             x_loc,
+    #             y_loc,
+    #             f"n={n:,}",
+    #             ha="center",
+    #             va="center",
+    #             fontsize=10,
+    #             color="black",
+    #             bbox={
+    #                 "boxstyle": "round,pad=0.2",
+    #                 "fc": "white",
+    #                 "ec": "none",
+    #                 "alpha": 0.5,
+    #             },
+    #         )
+
+    #         # Keep tracking history for logic continuity (matching old implementation)
+    #         tuple(row[g_col] for g_col in group)
+
+    #     return g, counts
+
+    @staticmethod
+    def _annotate_violin_plot(
+        ax: Axes,
+        counts: pl.DataFrame,
+        *,
+        annotate: str = "y",
+    ) -> None:
+        """Place count annotations inside violin polygons."""
+        count_column = "n_count" if "n_count" in counts.columns else "n"
+        violins = [
+            collection
+            for collection in ax.collections
+            if isinstance(collection, PolyCollection)
+        ]
+
+        for violin, row in zip(violins, counts.iter_rows(named=True), strict=True):
+            vertices = violin.get_paths()[0].vertices
+            x_coords, y_coords = vertices[:, 0], vertices[:, 1]
+
+            if annotate == "y":
+                value_coords, category_coords = x_coords, y_coords
+            else:
+                value_coords, category_coords = y_coords, x_coords
+
+            split_line = category_coords[0]
+            value_center = (value_coords.min() + value_coords.max()) / 2
+
+            if category_coords.max() > split_line + 1e-4:
+                category_position = category_coords.min() + 0.15
+            else:
+                category_position = split_line - 0.15
+
+            if annotate == "y":
+                x_position, y_position = value_center, category_position
+            else:
+                x_position, y_position = category_position, value_center
+
+            n = int(row[count_column])
+
+            ax.text(
+                x_position,
+                y_position,
+                f"n={n:,}",
+                ha="center",
+                va="center",
+                fontsize=10,
+                color="black",
+                bbox={
+                    "boxstyle": "round,pad=0.2",
+                    "fc": "white",
+                    "ec": "none",
+                    "alpha": 0.5,
+                },
+            )
 
     def _close(self) -> None:
         if self.figure is not None:

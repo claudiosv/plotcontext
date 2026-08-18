@@ -14,21 +14,11 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-import seaborn as sns
 
+from plotcontext.polars_plot_context import PlotContext
 from plotcontext.styles import SCIENCEPLOTS_STYLES, resolve_styles
 
 STYLE_NAMES = tuple(SCIENCEPLOTS_STYLES)
-
-
-@pytest.fixture
-def _standard_color_codes(monkeypatch):
-    """Isolate styles from Seaborn's process-global shorthand color remapping."""
-    colors = mpl.colors.colorConverter.colors
-    for code in "bgrmyck":
-        # Register each current value for restoration during fixture teardown.
-        monkeypatch.setitem(colors, code, colors[code])
-    sns.set_color_codes("reset")
 
 
 def _style_summary(style_name: str) -> str:
@@ -109,71 +99,69 @@ def test_science_and_ieee_styles_cascade_without_global_registration():
 @pytest.mark.parametrize("style_name", STYLE_NAMES)
 @pytest.mark.mpl_image_compare(
     style="default",
-    savefig_kwargs={"dpi": 100},
+    savefig_kwargs={"bbox_inches": "tight", "dpi": 100, "pad_inches": 0.05},
 )
-def test_scienceplots_style_is_visible(style_name, _standard_color_codes):
+def test_scienceplots_style_is_visible(style_name):
     """Render colors, line styles, markers, fonts, legends, and grid settings."""
-    # SciencePlots styles are designed to cascade from the science base. Keep
-    # the rcParams active until pytest-mpl saves the returned figure.
-    mpl.rcParams.update(SCIENCEPLOTS_STYLES["science"])
-    mpl.rcParams.update(SCIENCEPLOTS_STYLES[style_name])
-
-    # Tests must not require a system TeX installation. Figure dimensions and
-    # DPI are fixed so comparisons stay compact and consistent across styles.
-    mpl.rcParams.update(
-        {
-            "figure.dpi": 100,
-            "figure.figsize": [8.0, 3.6],
-            "savefig.dpi": 100,
-            "text.usetex": False,
-        }
+    plot_context = "ieee" if style_name == "ieee" else "paper"
+    styles = None if style_name == "ieee" else ["science", style_name]
+    context = PlotContext(
+        plot_context=plot_context,
+        style="white",
+        styles=styles,
+        rc_params={"figure.dpi": 100, "savefig.dpi": 100, "text.usetex": False},
+        create_fig=False,
     )
 
-    fig, (bar_ax, line_ax) = plt.subplots(1, 2)
-    categories = ["A", "B", "C"]
-    hues = ["alpha", "beta", "gamma", "delta"]
-    values = [
-        [2.0, 3.1, 2.6],
-        [2.8, 2.3, 3.4],
-        [3.6, 2.9, 2.1],
-        [2.4, 3.7, 3.0],
-    ]
-    sns.barplot(
-        data={
-            "category": categories * len(hues),
-            "hue": [hue for hue in hues for _ in categories],
-            "value": [value for row in values for value in row],
-        },
-        x="category",
-        y="value",
-        hue="hue",
-        errorbar=None,
-        saturation=1,
-        ax=bar_ax,
-    )
-    bar_ax.set(title="Grouped bars", xlabel="category", ylabel="value")
-    bar_ax.legend(title="hue", ncols=2)
+    with context:
+        fig, (bar_ax, line_ax) = plt.subplots(1, 2, figsize=(8.0, 3.6), dpi=100)
+        context.figure = fig
+        context.ax = line_ax
 
-    x = np.linspace(0, 2 * np.pi, 25)
-    for index, label in enumerate(hues):
-        line_ax.plot(x, np.sin(x + index * 0.55) + index * 0.35, label=label)
-    line_ax.set(title="Automatic line cycle", xlabel=r"$x / \pi$", ylabel=r"$f(x)$")
-    line_ax.legend(ncols=2)
-
-    cycle = list(mpl.rcParams["axes.prop_cycle"])
-    swatch_ax = fig.add_axes((0.1, 0.055, 0.8, 0.035))
-    for index, properties in enumerate(cycle):
-        swatch_ax.barh(
-            0,
-            1,
-            left=index,
-            color=properties.get("color", "none"),
-            edgecolor="none",
+        categories = ["A", "B", "C"]
+        hues = ["alpha", "beta", "gamma", "delta"]
+        values = [
+            [2.0, 3.1, 2.6],
+            [2.8, 2.3, 3.4],
+            [3.6, 2.9, 2.1],
+            [2.4, 3.7, 3.0],
+        ]
+        context.sns.barplot(
+            data={
+                "category": categories * len(hues),
+                "hue": [hue for hue in hues for _ in categories],
+                "value": [value for row in values for value in row],
+            },
+            x="category",
+            y="value",
+            hue="hue",
+            errorbar=None,
+            saturation=1,
+            ax=bar_ax,
         )
-    swatch_ax.set(xlim=(0, len(cycle)), ylim=(-0.5, 0.5))
-    swatch_ax.axis("off")
+        bar_ax.set(title="Grouped bars", xlabel="category", ylabel="value")
+        bar_ax.legend(title="hue", ncols=2)
 
-    fig.suptitle(style_name)
-    fig.text(0.5, 0.01, _style_summary(style_name), ha="center", fontsize=6)
-    fig.subplots_adjust(left=0.08, right=0.98, bottom=0.24, top=0.82, wspace=0.3)
+        x = np.linspace(0, 2 * np.pi, 25)
+        for index, label in enumerate(hues):
+            line_ax.plot(x, np.sin(x + index * 0.55) + index * 0.35, label=label)
+        line_ax.set(title="Automatic line cycle", xlabel=r"$x / \pi$", ylabel=r"$f(x)$")
+        line_ax.legend(ncols=2)
+
+        cycle = list(mpl.rcParams["axes.prop_cycle"])
+        swatch_ax = fig.add_axes((0.1, 0.055, 0.8, 0.035))
+        for index, properties in enumerate(cycle):
+            swatch_ax.barh(
+                0,
+                1,
+                left=index,
+                color=properties.get("color", "none"),
+                edgecolor="none",
+            )
+        swatch_ax.set(xlim=(0, len(cycle)), ylim=(-0.5, 0.5))
+        swatch_ax.axis("off")
+
+        fig.suptitle(style_name)
+        fig.text(0.5, 0.01, _style_summary(style_name), ha="center", fontsize=6)
+        fig.subplots_adjust(left=0.08, right=0.98, bottom=0.24, top=0.82, wspace=0.3)
     return fig

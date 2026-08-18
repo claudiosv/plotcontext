@@ -340,9 +340,30 @@ def test_plot_context_annotate_boxplot():
 def test_plot_context_annotate_boxplot_with_hue():
     df = pl.DataFrame(
         {
-            "group": ["a", "a", "b", "b"],
-            "sub": ["x", "y", "x", "y"],
-            "value": [1.0, 2.0, 3.0, 4.0],
+            "group": ["a"] * 10 + ["b"] * 10,
+            "sub": ["x"] * 5 + ["y"] * 5 + ["x"] * 5 + ["y"] * 5,
+            "value": [
+                1.0,
+                1.2,
+                1.4,
+                1.6,
+                1.8,
+                2.0,
+                2.3,
+                2.6,
+                2.9,
+                3.2,
+                3.0,
+                3.4,
+                3.8,
+                4.2,
+                4.6,
+                4.0,
+                4.5,
+                5.0,
+                5.5,
+                6.0,
+            ],
         }
     )
     ctx = PlotContext()
@@ -351,7 +372,8 @@ def test_plot_context_annotate_boxplot_with_hue():
             data=df, x="value", y="group", hue="sub", annotate="y"
         )
         assert ax is ctx.ax
-        assert set(counts["n"].to_list()) == {1}
+        assert set(counts["n"].to_list()) == {5}
+        assert [text.get_text() for text in ax.texts] == ["n=5"] * 4
     return ctx.figure
 
 
@@ -369,6 +391,58 @@ def test_plot_context_annotate_boxplot_with_existing_count_column():
         ax, counts = ctx.sns.boxplot(data=df, x="value", y="group", annotate="y")
         assert ax is ctx.ax
         assert set(counts["n"].to_list()) == {30}
+    return ctx.figure
+
+
+@pytest.mark.mpl_image_compare(style="default")
+def test_plot_context_annotate_violinplot_with_hue():
+    df = pl.DataFrame(
+        {
+            "group": ["a"] * 12 + ["b"] * 12,
+            "sub": ["x"] * 6 + ["y"] * 6 + ["x"] * 6 + ["y"] * 6,
+            "value": [
+                1.0,
+                1.2,
+                1.3,
+                1.5,
+                1.7,
+                1.9,
+                2.0,
+                2.3,
+                2.6,
+                2.9,
+                3.2,
+                3.5,
+                4.0,
+                4.4,
+                4.8,
+                5.2,
+                5.6,
+                6.0,
+                6.0,
+                6.6,
+                7.2,
+                7.8,
+                8.4,
+                9.0,
+            ],
+        }
+    )
+    ctx = PlotContext()
+    with ctx:
+        ax, counts = ctx.sns.violinplot(
+            data=df,
+            x="value",
+            y="group",
+            hue="sub",
+            split=True,
+            inner=None,
+            cut=0,
+            annotate="y",
+        )
+        assert ax is ctx.ax
+        assert counts["n"].to_list() == [6, 6, 6, 6]
+        assert [text.get_text() for text in ax.texts] == ["n=6"] * 4
     return ctx.figure
 
 
