@@ -225,6 +225,63 @@ def test_get_rc_params_builds_style_dict_for_default_theme(monkeypatch, tmp_path
     assert rc["grid.color"] == "#555555"
 
 
+def test_get_rc_params_token_color_source_uses_function_token(monkeypatch, tmp_path):
+    theme_file = tmp_path / "theme-defaults" / "themes" / "dark_modern.json"
+    theme_file.parent.mkdir(parents=True)
+    theme_file.write_text(
+        json.dumps(
+            {
+                "colors": {
+                    "editor.background": "#0f0f0f",
+                    "editor.foreground": "#eeeeee",
+                },
+                "tokenColors": [
+                    {"scope": ["function"], "settings": {"foreground": "#ff0000"}},
+                    {"scope": ["string"], "settings": {"foreground": "#00ff00"}},
+                ],
+            }
+        )
+    )
+
+    monkeypatch.setattr(
+        "plotcontext.theming.vscode.get_theme_name", lambda: ({}, "dark_modern")
+    )
+    monkeypatch.setattr("plotcontext.theming.vscode.DEFAULT_EXTENSIONS_DIR", tmp_path)
+
+    rc = get_rc_params(text_color_source="token", label_color_source="token")
+    assert rc["text.color"] == "#ff0000"
+    assert rc["axes.labelcolor"] == "#00ff00"
+    # Unaffected rc entries keep using the plain editor foreground.
+    assert rc["xtick.color"] == "#eeeeee"
+
+
+def test_get_rc_params_token_color_source_falls_back_when_token_missing(
+    monkeypatch, tmp_path
+):
+    theme_file = tmp_path / "theme-defaults" / "themes" / "dark_modern.json"
+    theme_file.parent.mkdir(parents=True)
+    theme_file.write_text(
+        json.dumps(
+            {
+                "colors": {
+                    "editor.background": "#0f0f0f",
+                    "editor.foreground": "#eeeeee",
+                },
+                "tokenColors": [],
+            }
+        )
+    )
+
+    monkeypatch.setattr(
+        "plotcontext.theming.vscode.get_theme_name", lambda: ({}, "dark_modern")
+    )
+    monkeypatch.setattr("plotcontext.theming.vscode.DEFAULT_EXTENSIONS_DIR", tmp_path)
+
+    rc = get_rc_params(text_color_source="token", label_color_source="token")
+    assert rc["text.color"] == "#eeeeee"
+    assert rc["axes.labelcolor"] == "#eeeeee"
+
+
 def test_get_rc_params_applies_color_customizations(monkeypatch, tmp_path):
     theme_file = tmp_path / "custom_theme.json"
     theme_file.write_text(
@@ -262,7 +319,8 @@ def test_set_theme_calls_sns_set_style(monkeypatch):
     captured = {}
 
     monkeypatch.setattr(
-        "plotcontext.theming.vscode.get_rc_params", lambda: {"axes.facecolor": "red"}
+        "plotcontext.theming.vscode.get_rc_params",
+        lambda **kwargs: {"axes.facecolor": "red"},
     )
     monkeypatch.setattr(
         "plotcontext.theming.vscode.sns.set_style",
@@ -272,3 +330,19 @@ def test_set_theme_calls_sns_set_style(monkeypatch):
     set_theme()
 
     assert captured == {"style": "darkgrid", "rc": {"axes.facecolor": "red"}}
+
+
+def test_set_theme_forwards_color_source_kwargs(monkeypatch):
+    captured = {}
+
+    monkeypatch.setattr(
+        "plotcontext.theming.vscode.get_rc_params",
+        lambda **kwargs: captured.update(kwargs) or {},
+    )
+    monkeypatch.setattr(
+        "plotcontext.theming.vscode.sns.set_style", lambda style, rc: None
+    )
+
+    set_theme(text_color_source="token", label_color_source="token")
+
+    assert captured == {"text_color_source": "token", "label_color_source": "token"}

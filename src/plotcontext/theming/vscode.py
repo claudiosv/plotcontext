@@ -5,8 +5,11 @@ import os
 import platform
 import re
 from pathlib import Path
+from typing import Literal
 
 import seaborn as sns
+
+ColorSource = Literal["text", "token"]
 
 DEFAULT_THEME_NAME = "dark_modern"
 
@@ -159,8 +162,24 @@ def get_extension_filepath(theme_name):
     raise KeyError("Theme extension folder was not found")
 
 
-def get_rc_params() -> dict:
-    """Compute matplotlib rc params from the active VS Code color theme."""
+def get_rc_params(
+    *,
+    text_color_source: ColorSource = "text",
+    label_color_source: ColorSource = "text",
+) -> dict:
+    """Compute matplotlib rc params from the active VS Code color theme.
+
+    Parameters
+    ----------
+    text_color_source : {"text", "token"}
+        Color used for ``text.color``. ``"text"`` uses the theme's editor
+        foreground; ``"token"`` uses the syntax-highlighting color for
+        function tokens, falling back to the editor foreground if the theme
+        doesn't define one.
+    label_color_source : {"text", "token"}
+        Color used for ``axes.labelcolor``, with the same options as
+        ``text_color_source`` but sourced from the theme's string tokens.
+    """
     json_settings, theme_name = get_theme_name()
 
     if theme_name != DEFAULT_THEME_NAME:
@@ -187,11 +206,19 @@ def get_rc_params() -> dict:
     text_color = theme_settings["colors"].get("editor.foreground", "#FFFFFF")
     comment_color = get_token_color(theme_settings, "comment")
 
+    resolved_text_color = text_color
+    if text_color_source == "token":
+        resolved_text_color = get_token_color(theme_settings, "function") or text_color
+
+    resolved_label_color = text_color
+    if label_color_source == "token":
+        resolved_label_color = get_token_color(theme_settings, "string") or text_color
+
     return {
         "axes.facecolor": bg_color,
         "figure.facecolor": bg_color,
-        "text.color": text_color,
-        "axes.labelcolor": text_color,
+        "text.color": resolved_text_color,
+        "axes.labelcolor": resolved_label_color,
         "xtick.color": text_color,
         "ytick.color": text_color,
         "axes.titlecolor": text_color,
@@ -201,6 +228,16 @@ def get_rc_params() -> dict:
     }
 
 
-def set_theme() -> None:
-    """Apply the active VS Code color theme to matplotlib/seaborn via sns.set_style."""
-    sns.set_style("darkgrid", rc=get_rc_params())
+def set_theme(
+    *,
+    text_color_source: ColorSource = "text",
+    label_color_source: ColorSource = "text",
+) -> None:
+    """Apply the active VS Code color theme to matplotlib/seaborn via sns.set_style.
+
+    See `get_rc_params` for `text_color_source` and `label_color_source`.
+    """
+    rc = get_rc_params(
+        text_color_source=text_color_source, label_color_source=label_color_source
+    )
+    sns.set_style("darkgrid", rc=rc)
