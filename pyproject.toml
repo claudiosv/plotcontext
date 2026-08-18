@@ -6,8 +6,31 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "matplotlib>=3.10.8",
-    "pandas>=3.0.2",
+    "polars>=1.0",
+    "pandas>=2.0",
     "scienceplots>=2.2.1",
     "seaborn>=0.13.2",
     "statsmodels>=0.14.6",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-mpl>=0.19.0",
+    "ruff>=0.16.3",
+    "ty>=0.0.72",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=plotcontext --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src/plotcontext"]
+
+[tool.ruff]
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
