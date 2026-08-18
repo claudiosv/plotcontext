@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 T = TypeVar("T")
 
 
-class PlotContextNew:
+class PlotContextFontTools:
     """Class-based context manager for setting up professional publication plots."""
 
     def __init__(

@@ -21,6 +21,8 @@ from matplotlib.axes import Axes
 from matplotlib.ticker import ScalarFormatter
 from matplotlib.typing import ColorType, LineStyleType  # ruff:ignore[unused-import]
 
+from plotcontext.plot_context import AbstractPlotContext
+
 if TYPE_CHECKING:
     # This tricks type checkers into giving perfect autocomplete for ctx.sns and ctx.plt
     import matplotlib.pyplot as plt_module
@@ -168,7 +170,7 @@ class TickFormatters:
     """Format labels as a percentage."""
 
 
-class SinglePlotContext:
+class SinglePlotContext(AbstractPlotContext):
     """
     Class-based context manager for setting up a Seaborn-styled Matplotlib plot.
 
@@ -654,7 +656,7 @@ class SinglePlotContext:
         target_fig.savefig(png_filename, transparent=True)
 
 
-class PlotContext:
+class PlotContext(AbstractPlotContext):
     """
     Class-based context manager for setting up a Seaborn-styled Matplotlib plot.
 
