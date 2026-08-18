@@ -1,0 +1,61 @@
+src/plotcontext/single_plot_context.py
+  s_b88e5e26b3ffa6::t_f4c8febd7e288a 118-124,230-240
+  s_b88e5e26b3ffa6::t_d5176b1afd5873 12,18,365,410
+  h_aceaeb4e74d6dc 1-11,13-17,19-117,125-229,241-364,366-409,411-418
+src/plotcontext/polars_plot_context.py
+  s_b88e5e26b3ffa6::t_f51706ca857a4c 6-7,14
+  s_b88e5e26b3ffa6::t_c82fa83e5f6d20 609
+  s_b88e5e26b3ffa6::t_6fa0f9d0dc3451 573,575,581,584-585,591,595
+  h_aceaeb4e74d6dc 452
+  s_b88e5e26b3ffa6::t_693b6c7200d0a5 435
+  s_fea5ab67349b34::t_f8af3422b96958 453
+tests/test_visual.py
+  s_b88e5e26b3ffa6::t_bb35d4bd9f0b68 15
+  s_b88e5e26b3ffa6::t_fcce8846f01ab6 1-14,22-50
+  s_b88e5e26b3ffa6::t_0fb5a39862edec 20-21
+  s_b88e5e26b3ffa6::t_bd47d7fe40f5ea 16-19
+.gitignore
+  s_b88e5e26b3ffa6::t_b179e7817ec8a2 18
+src/plotcontext/auto_emoji.py
+  s_b88e5e26b3ffa6::t_e59ae426dfc277 82
+src/plotcontext/plot_context_font_tools.py
+  s_b88e5e26b3ffa6::t_932730b4d01ea1 198
+tests/test_single_plot_context.py
+  s_b88e5e26b3ffa6::t_3c2ac2271f7cbb 1-141
+  s_b88e5e26b3ffa6::t_05e48a05bfe308 142-188
+tests/test_context_managers.py
+  s_b88e5e26b3ffa6::t_26b4c837c9e7df 1-34
+src/plotcontext/context_managers.py
+  s_b88e5e26b3ffa6::t_0cd70a2da9a94d 1-42
+pyproject.toml
+  s_b88e5e26b3ffa6::t_92fb76dcd29663 38-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "95c0331f8106cde6f8c0b102cf54ce150142e2b4",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_b88e5e26b3ffa6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e169f11d-7332-4650-875c-1aa34387f98f",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    },
+    "s_fea5ab67349b34": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0fa747fa-ab4f-4f45-b49a-5b3156079fd5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
