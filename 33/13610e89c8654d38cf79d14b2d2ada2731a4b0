@@ -1,0 +1,31 @@
+src/plotcontext/polars_plot_context.py
+  h_aceaeb4e74d6dc 17-18,383,456,460,468,482,487,489,512-517,519,521-527,529-530,534-536,555-770
+  h_aceaeb4e74d6dc 275-282,384-385,457-459,481,518,528,771
+src/plotcontext/styles/scienceplots.py
+  s_092d4701032f54::t_54e9b2fc967e20 110,535
+tests/test_polars_plot_context.py
+  s_092d4701032f54::t_ed534f129521c1 343-366,375-376,397-448
+tests/test_styles_scienceplots.py
+  s_092d4701032f54::t_ee330aeff03417 18,102,104,106-113,116-140,142-166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3313610e89c8654d38cf79d14b2d2ada2731a4b0",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_092d4701032f54": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a016c1-5cbb-72b1-b245-7d47c3ec63c0",
+        "model": "unknown"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
