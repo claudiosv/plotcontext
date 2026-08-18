@@ -1,0 +1,45 @@
+src/plotcontext/plot_context_builder.py
+  h_aceaeb4e74d6dc 1-668
+src/plotcontext/polars_plot_context.py
+  h_aceaeb4e74d6dc 1-12,14,16-18,20-21,23-121,657-1211
+  s_fea5ab67349b34::t_0591287b21d87e 13,15,19,22,122-656
+.gitignore
+  s_fea5ab67349b34::t_59c1b7294282f8 1-10
+.python-version
+  s_fea5ab67349b34::t_4f91616718d806 1
+main.py
+  s_fea5ab67349b34::t_7b31b533e2d1f8 1-6
+pyproject.toml
+  s_fea5ab67349b34::t_b425b521efda96 1-13
+src/plotcontext/__init__.py
+  s_fea5ab67349b34::t_fb1688d4ddd5f7 1-5
+src/plotcontext/plot_context.py
+  s_fea5ab67349b34::t_db8f40bb30c8f8 1-587
+src/plotcontext/plot_context_new.py
+  s_fea5ab67349b34::t_971153540f567f 1-286
+"src/plotcontext/polars_plot_context copy.py"
+  s_fea5ab67349b34::t_b16a58f64944bc 1-721
+uv.lock
+  s_fea5ab67349b34::t_e0de9b4ca02442 1-399
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3b4d6a29a5d34cb2956fd24281370ec4f40846c3",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_fea5ab67349b34": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0fa747fa-ab4f-4f45-b49a-5b3156079fd5",
+        "model": "unknown"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
