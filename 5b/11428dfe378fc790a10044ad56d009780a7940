@@ -1,0 +1,143 @@
+tests/test_polars_plot_context.py
+  s_b7382e532f2f6c::t_71b3a500cfff53 106,112,115,121,124,130,133,140,143,151
+  s_b7382e532f2f6c::t_848199b55fe5aa 169
+  s_b7382e532f2f6c::t_af9e28e0524cef 137-138
+  s_b7382e532f2f6c::t_0758fcb2354289 185-188,191,197
+  s_b7382e532f2f6c::t_94efd8d50a4b18 229,232,239,250,259
+  s_b7382e532f2f6c::t_32ef94c3b7fea3 59,68,71,77,80,86,89,96
+  s_b7382e532f2f6c::t_f69dd008bc2cc6 336,339,355
+  s_b7382e532f2f6c::t_282241acfec2cb 184
+  s_092d4701032f54::t_ee6d05109812e1 12,200,206,221,262,277,286,301,323,358,372
+src/plotcontext/_backend.py
+  s_b7382e532f2f6c::t_4680f7ed0e374f 1-13
+tests/test_auto_emoji.py
+  s_b7382e532f2f6c::t_2251a211b1a3f8 119-120
+  s_b7382e532f2f6c::t_74d66c572deee6 91,104,107,126
+tests/test_single_plot_context.py
+  s_b7382e532f2f6c::t_0194e2ae88da22 169,172-174,176,179
+  s_b7382e532f2f6c::t_3ef701ff4999ee 143
+  s_b7382e532f2f6c::t_f28d2fef9c2457 13,24,27,29,32,35,37,40,43,46,51,54,57,62
+  s_b7382e532f2f6c::t_20158467df2fcc 103-104,106-110,113,116-117,119
+  s_b7382e532f2f6c::t_48f563832e2086 91
+  s_b7382e532f2f6c::t_5056749239283d 211
+  s_092d4701032f54::t_5d401229e8917b 6,122,128,146,151,182,186,207,214
+pyproject.toml
+  s_b7382e532f2f6c::t_eeb97de70ec542 64
+  h_aceaeb4e74d6dc 16-20,35-36,38,40-55,57-58,61-63,65-69
+  s_b7382e532f2f6c::t_a31ef5952e40ad 14
+  s_092d4701032f54::t_4f11ec7bf66140 37,70
+src/plotcontext/polars_plot_context.py
+  s_b7382e532f2f6c::t_3faf37241ce8f3 21-22
+  s_b7382e532f2f6c::t_b0c87d9a922fce 310
+  s_b7382e532f2f6c::t_104eb77f409135 19
+  s_b7382e532f2f6c::t_1df6845768a7e5 23
+  s_b7382e532f2f6c::t_1fbd4ad2409f5d 311
+  s_092d4701032f54::t_121623aba48199 147,235,269,285
+tests/test_context_figure.py
+  s_b7382e532f2f6c::t_ed5f3dac86ce84 31,37,40,48
+src/plotcontext/figure_context.py
+  s_b7382e532f2f6c::t_05dda2e8fa9ccf 30
+  s_b7382e532f2f6c::t_8b0e059f413ba3 8-9
+tests/test_plot_context_font_tools.py
+  s_b7382e532f2f6c::t_a7972fb95bd5ca 82,90
+  s_b7382e532f2f6c::t_6eece998b6dcae 8-10
+  s_b7382e532f2f6c::t_024e9fbebdb225 20,23,29,32,38,41,45,47,50,54,56,59,63,65
+src/plotcontext/single_plot_context.py
+  s_b7382e532f2f6c::t_59a7b7f83371a3 19-20
+  s_b7382e532f2f6c::t_44894e979d1833 242
+  s_b7382e532f2f6c::t_623179af12a7f0 16
+  s_b7382e532f2f6c::t_f86b843ac5b4ae 21
+  s_b7382e532f2f6c::t_358144f3280d95 243
+  s_092d4701032f54::t_acfb2cdcb853ac 42,98,200,217
+tests/test_context_managers.py
+  s_b7382e532f2f6c::t_9eeab1f28065cb 3,9,15,18
+  s_b7382e532f2f6c::t_2870db43275033 30,40
+src/plotcontext/styles/icml.py
+  s_b7382e532f2f6c::t_349a5e42ebc8cd 1-30
+src/plotcontext/plot_context_builder.py
+  s_b7382e532f2f6c::t_ac149345a2add6 36-38
+  s_b7382e532f2f6c::t_38ee3c5f3f5e42 35
+  s_b7382e532f2f6c::t_efb68d1184c55a 39
+  s_092d4701032f54::t_4ee3e7becd6e32 234,420-422,441,455-456
+README.md
+  h_aceaeb4e74d6dc 1-18
+src/plotcontext/styles/sketch.py
+  s_b7382e532f2f6c::t_09c04f7ace4168 1-9
+src/plotcontext/context_managers.py
+  s_b7382e532f2f6c::t_a7de5ccad94468 9-10,19-20,30-31
+  s_b7382e532f2f6c::t_73a79bfa607734 45-46
+tests/test_figure_context.py
+  s_b7382e532f2f6c::t_1ea2d53017a185 17,22-23
+src/plotcontext/styles/slides.py
+  s_b7382e532f2f6c::t_3ff556568196e1 1-28
+src/plotcontext/plot_context_font_tools.py
+  s_b7382e532f2f6c::t_e7994859a98005 12
+  s_b7382e532f2f6c::t_13a9ef1c32b23f 13-14
+  s_b7382e532f2f6c::t_a0c3dd684c1aec 130
+  s_b7382e532f2f6c::t_6b9199ad153eac 15
+  s_b7382e532f2f6c::t_7e5d787ecd1973 131
+  s_092d4701032f54::t_b9a3767daf8560 95-97,104
+tests/test_plot_context_builder.py
+  s_b7382e532f2f6c::t_9f3d0569488e51 224,238
+  s_b7382e532f2f6c::t_44c3966cb36d74 160
+  s_b7382e532f2f6c::t_2f6de250309e42 117,137,140,146,149,155
+  s_b7382e532f2f6c::t_b8d8ca73a21171 88,91,94-95,97
+  s_b7382e532f2f6c::t_3d3a472f868736 71
+  s_b7382e532f2f6c::t_24fad8bdd56df5 76-78
+  s_b7382e532f2f6c::t_64f3486b375b61 104-105
+  s_b7382e532f2f6c::t_04c3d4a498b52c 172,180
+  s_b7382e532f2f6c::t_cdd3609fae5351 100,107
+  s_b7382e532f2f6c::t_0164cb89dcb515 189,199,202,211,214,221
+src/plotcontext/context_figure.py
+  s_b7382e532f2f6c::t_39107929da1be8 11-12
+  s_b7382e532f2f6c::t_16e9c83fac29a1 33
+LICENSES/SciencePlots.txt
+  s_092d4701032f54::t_e1402c676a8495 1-21
+src/plotcontext/styles/__init__.py
+  s_092d4701032f54::t_9ac44cd9f5b529 1-5
+src/plotcontext/styles/scienceplots.py
+  s_092d4701032f54::t_2393eebe4237f5 1-548
+tests/test_styles_scienceplots.py
+  s_092d4701032f54::t_90a2a881fd4d86 1-54
+tests/test_styles_vscode.py
+  s_092d4701032f54::t_20827b072d41e9 5,24,39,62,99,112,132,134,157,159,167,169,181,183,210,212,239,241,268,270,292,303
+uv.lock
+  s_7ae84a287962a1::t_a1416312869bc4 465,522-543
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5b11428dfe378fc790a10044ad56d009780a7940",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_092d4701032f54": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a016c1-5cbb-72b1-b245-7d47c3ec63c0",
+        "model": "unknown"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    },
+    "s_7ae84a287962a1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a016c1-5cf9-7f10-a0af-904666d156ca",
+        "model": "unknown"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    },
+    "s_b7382e532f2f6c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d665e72b-9ef1-418e-9c5a-54079b8df0b4",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
