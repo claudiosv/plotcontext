@@ -1,0 +1,24 @@
+tests/test_styles_scienceplots.py
+  s_092d4701032f54::t_e8a3e821adc695 1-12,14-17,21-56,107-179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "666f5171b8ffc8664c40dc77752873231b90f778",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_092d4701032f54": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a016c1-5cbb-72b1-b245-7d47c3ec63c0",
+        "model": "unknown"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
