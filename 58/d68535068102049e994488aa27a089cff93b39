@@ -1,0 +1,27 @@
+src/plotcontext/polars_plot_context.py
+  h_aceaeb4e74d6dc 467,531,567,569,572-573,575-577,579-585,596-601,610-613
+  s_092d4701032f54::t_8ff805d1a6bf16 522-526,529,586-595,602-609,614
+tests/test_polars_plot_context.py
+  s_092d4701032f54::t_82a88c42573e31 343-415,437-458,460-463,465-477,481-505,527-528,569-588,590-597
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "58d68535068102049e994488aa27a089cff93b39",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_092d4701032f54": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a016c1-5cbb-72b1-b245-7d47c3ec63c0",
+        "model": "unknown"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
