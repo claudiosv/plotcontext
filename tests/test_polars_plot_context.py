@@ -340,24 +340,18 @@ def test_plot_context_annotate_boxplot():
 def test_plot_context_annotate_boxplot_with_hue():
     df = pl.DataFrame(
         {
-            "group": ["a"] * 10 + ["b"] * 10,
-            "sub": ["x"] * 5 + ["y"] * 5 + ["x"] * 5 + ["y"] * 5,
+            "group": ["a"] * 5 + ["b"] * 9,
+            "sub": ["x"] * 2 + ["y"] * 3 + ["x"] * 4 + ["y"] * 5,
             "value": [
                 1.0,
-                1.2,
                 1.4,
-                1.6,
-                1.8,
                 2.0,
                 2.3,
                 2.6,
-                2.9,
-                3.2,
                 3.0,
                 3.4,
                 3.8,
                 4.2,
-                4.6,
                 4.0,
                 4.5,
                 5.0,
@@ -369,12 +363,144 @@ def test_plot_context_annotate_boxplot_with_hue():
     ctx = PlotContext()
     with ctx:
         ax, counts = ctx.sns.boxplot(
-            data=df, x="value", y="group", hue="sub", annotate="y"
+            data=df,
+            x="value",
+            y="group",
+            hue="sub",
+            annotate="y",
+            center_labels=False,
         )
+        count_lookup = {
+            (row["group"], row["sub"]): int(row["n"])
+            for row in counts.iter_rows(named=True)
+        }
+        table_counts = [
+            [count_lookup[(group, sub)] for group in ["a", "b"]]
+            for sub in ["x", "y"]
+        ]
+        table = ax.table(
+            cellText=[
+                ["x", *table_counts[0]],
+                ["y", *table_counts[1]],
+            ],
+            colLabels=["", "a", "b"],
+            bbox=[0.5, 0.72, 0.24, 0.2],
+        )
+        table.auto_set_font_size(False)
+        table.set_fontsize(8)
+        table.set_zorder(10)
+
         assert ax is ctx.ax
-        assert set(counts["n"].to_list()) == {5}
-        assert [text.get_text() for text in ax.texts] == ["n=5"] * 4
+        assert counts["n"].to_list() == [2, 3, 4, 5]
+        assert table_counts == [[2, 4], [3, 5]]
+        assert [text.get_text() for text in ax.texts] == [
+            "n=2",
+            "n=4",
+            "n=3",
+            "n=5",
+        ]
+        centered_positions = [
+            (row["x_align"] + 0.5, offset)
+            for offset, row in enumerate(counts.iter_rows(named=True))
+        ]
+        assert [text.get_position() for text in ax.texts] != centered_positions
     return ctx.figure
+
+
+@pytest.mark.mpl_image_compare(style="default")
+def test_plot_context_annotate_boxplot_with_hue_vertical():
+    df = pl.DataFrame(
+        {
+            "group": ["a"] * 5 + ["b"] * 9,
+            "sub": ["x"] * 2 + ["y"] * 3 + ["x"] * 4 + ["y"] * 5,
+            "value": [
+                1.0,
+                1.4,
+                2.0,
+                2.3,
+                2.6,
+                3.0,
+                3.4,
+                3.8,
+                4.2,
+                4.0,
+                4.5,
+                5.0,
+                5.5,
+                6.0,
+            ],
+        }
+    )
+    ctx = PlotContext()
+    with ctx:
+        ax, counts = ctx.sns.boxplot(
+            data=df,
+            x="group",
+            y="value",
+            hue="sub",
+            annotate="x",
+            center_labels=False,
+        )
+        count_lookup = {
+            (row["group"], row["sub"]): int(row["n"])
+            for row in counts.iter_rows(named=True)
+        }
+        table_counts = [
+            [count_lookup[(group, sub)] for group in ["a", "b"]]
+            for sub in ["x", "y"]
+        ]
+        table = ax.table(
+            cellText=[
+                ["x", *table_counts[0]],
+                ["y", *table_counts[1]],
+            ],
+            colLabels=["", "a", "b"],
+            bbox=[0.38, 0.05, 0.24, 0.2],
+        )
+        table.auto_set_font_size(False)
+        table.set_fontsize(8)
+        table.set_zorder(10)
+
+        assert ax is ctx.ax
+        assert counts["n"].to_list() == [2, 3, 4, 5]
+        assert table_counts == [[2, 4], [3, 5]]
+        assert [text.get_text() for text in ax.texts] == [
+            "n=2",
+            "n=4",
+            "n=3",
+            "n=5",
+        ]
+        centered_positions = [
+            (offset, row["x_align"] * 1.025)
+            for offset, row in enumerate(counts.iter_rows(named=True))
+        ]
+        assert [text.get_position() for text in ax.texts] != centered_positions
+    return ctx.figure
+
+
+def test_plot_context_annotate_boxplot_can_disable_centered_labels():
+    df = pl.DataFrame(
+        {
+            "group": ["a"] * 4,
+            "sub": ["x"] * 2 + ["y"] * 2,
+            "value": [1.0, 2.0, 3.0, 4.0],
+        }
+    )
+    ctx = PlotContext()
+    with ctx:
+        ax, counts = ctx.sns.boxplot(
+            data=df,
+            x="value",
+            y="group",
+            hue="sub",
+            annotate="y",
+            center_labels=False,
+        )
+        centered_positions = [
+            (row["x_align"] + 0.5, offset)
+            for offset, row in enumerate(counts.iter_rows(named=True))
+        ]
+        assert [text.get_position() for text in ax.texts] != centered_positions
 
 
 @pytest.mark.mpl_image_compare(style="default")
@@ -398,8 +524,8 @@ def test_plot_context_annotate_boxplot_with_existing_count_column():
 def test_plot_context_annotate_violinplot_with_hue():
     df = pl.DataFrame(
         {
-            "group": ["a"] * 12 + ["b"] * 12,
-            "sub": ["x"] * 6 + ["y"] * 6 + ["x"] * 6 + ["y"] * 6,
+            "group": ["a"] * 8 + ["b"] * 16,
+            "sub": ["x"] * 3 + ["y"] * 5 + ["x"] * 7 + ["y"] * 9,
             "value": [
                 1.0,
                 1.2,
@@ -440,9 +566,35 @@ def test_plot_context_annotate_violinplot_with_hue():
             cut=0,
             annotate="y",
         )
+        count_lookup = {
+            (row["group"], row["sub"]): int(row["n"])
+            for row in counts.iter_rows(named=True)
+        }
+        table_counts = [
+            [count_lookup[(group, sub)] for group in ["a", "b"]]
+            for sub in ["x", "y"]
+        ]
+        table = ax.table(
+            cellText=[
+                ["x", *table_counts[0]],
+                ["y", *table_counts[1]],
+            ],
+            colLabels=["", "a", "b"],
+            bbox=[0.5, 0.72, 0.24, 0.2],
+        )
+        table.auto_set_font_size(False)
+        table.set_fontsize(8)
+        table.set_zorder(10)
+
         assert ax is ctx.ax
-        assert counts["n"].to_list() == [6, 6, 6, 6]
-        assert [text.get_text() for text in ax.texts] == ["n=6"] * 4
+        assert counts["n"].to_list() == [3, 5, 7, 9]
+        assert table_counts == [[3, 7], [5, 9]]
+        assert [text.get_text() for text in ax.texts] == [
+            "n=3",
+            "n=5",
+            "n=7",
+            "n=9",
+        ]
     return ctx.figure
 
 

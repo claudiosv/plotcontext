@@ -464,6 +464,7 @@ class PlotContext(AbstractPlotContext):
         y = kwargs.get(annotate)
         x = kwargs.get("x" if annotate == "y" else "y")
         x_align = kwargs.get("x_align", "median")
+        center_labels = kwargs.pop("center_labels", False)
 
         # Preserve appearance order unless explicit orders were supplied.
         hue_order = (
@@ -514,15 +515,20 @@ class PlotContext(AbstractPlotContext):
                 g,
                 counts,
                 annotate=annotate,
-                group=group,
             )
             return g, counts
 
         if func.__name__ == "boxplot":
+            # Seaborn creates hue-dodged box artists hue-first, while counts are
+            # returned category-first for tabular use.
+            annotation_counts = (
+                counts.sort(group[::-1]) if hue and not center_labels else counts
+            )
             PlotContext._annotate_box_plot(
                 g,
-                counts,
+                annotation_counts,
                 annotate=annotate,
+                center_labels=center_labels,
             )
             return g, counts
 
@@ -558,51 +564,54 @@ class PlotContext(AbstractPlotContext):
         counts: pl.DataFrame,
         *,
         annotate: str,
+        center_labels: bool = False,
     ) -> None:
-        """Annotate hue-dodged boxes outward from each categorical center."""
+        """Annotate boxes at legacy centered positions or using artist geometry."""
         boxes = [patch for patch in ax.patches if isinstance(patch, PathPatch)]
 
-        for box, row in zip(
-            boxes,
-            counts.iter_rows(named=True),
-            strict=True,
+        for offset, (box, row) in enumerate(
+            zip(boxes, counts.iter_rows(named=True), strict=True)
         ):
-            vertices = box.get_path().vertices
-            x_coords = vertices[:, 0]
-            y_coords = vertices[:, 1]
-
-            x_center = (x_coords.min() + x_coords.max()) / 2
-            y_center = (y_coords.min() + y_coords.max()) / 2
-
-            if annotate == "y":
-                # Horizontal boxplot:
-                #
-                #     x = numeric
-                #     y = categorical
-                #
-                # Hue boxes are vertically dodged around categorical positions
-                # 0, 1, 2, ...
-                category_center = round(y_center)
-                box_height = y_coords.max() - y_coords.min()
-
-                direction = 1 if y_center > category_center else -1
-
-                label_x = x_center
-                label_y = y_center + direction * box_height * 0.4
+            if center_labels:
+                label_x = row["x_align"] + 0.5 if annotate == "y" else offset
+                label_y = offset if annotate == "y" else row["x_align"] * 1.025
             else:
-                # Vertical boxplot:
-                #
-                #     x = categorical
-                #     y = numeric
-                #
-                # Hue boxes are horizontally dodged around categorical positions.
-                category_center = round(x_center)
-                box_width = x_coords.max() - x_coords.min()
+                vertices = box.get_path().vertices
+                x_coords = vertices[:, 0]
+                y_coords = vertices[:, 1]
 
-                direction = 1 if x_center > category_center else -1
+                x_center = (x_coords.min() + x_coords.max()) / 2
+                y_center = (y_coords.min() + y_coords.max()) / 2
 
-                label_x = x_center + direction * box_width * 0.4
-                label_y = y_center
+                if annotate == "y":
+                    # Horizontal boxplot:
+                    #
+                    #     x = numeric
+                    #     y = categorical
+                    #
+                    # Hue boxes are vertically dodged around categorical positions
+                    # 0, 1, 2, ...
+                    category_center = round(y_center)
+                    box_height = y_coords.max() - y_coords.min()
+
+                    direction = 0 #1 if y_center > category_center else -1
+
+                    label_x = x_center
+                    label_y = y_center + direction * box_height * 0.4
+                else:
+                    # Vertical boxplot:
+                    #
+                    #     x = categorical
+                    #     y = numeric
+                    #
+                    # Hue boxes are horizontally dodged around categorical positions.
+                    category_center = round(x_center)
+                    box_width = x_coords.max() - x_coords.min()
+
+                    direction = 0 #1 if x_center > category_center else -1
+
+                    label_x = x_center + direction * box_width * 0.4
+                    label_y = y_center
 
             n = int(row["n"])
 
