@@ -1,0 +1,19 @@
+.github/workflows/tests.yml
+  s_4d56693c9c0558::t_87e8ecb4cd4cdd 22-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1d4315c35040aa2762e0c14414737dc8a9fab09c",
+  "prompts": {},
+  "sessions": {
+    "s_4d56693c9c0558": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3ab1be21-d8b5-4dc4-8e05-08efe293fdb2",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
