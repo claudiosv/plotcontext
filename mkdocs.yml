@@ -5,9 +5,6 @@ repo_url: https://github.com/claudiosv/plotcontext
 repo_name: claudiosv/plotcontext
 edit_uri: edit/main/docs/
 
-hooks:
-  - docs/hooks/gallery_compat.py
-
 theme:
   name: material
   palette:
@@ -44,7 +41,12 @@ theme:
 
 nav:
   - Home: index.md
-  - Examples: generated/gallery/index.md
+  - Examples:
+      - Overview: examples/index.md
+      - Fluent Plot builder: examples/plot_fluent_builder.ipynb
+      - Boxplot count annotations: examples/plot_boxplot_annotations.ipynb
+      - Sketch mode: examples/plot_sketch_mode.ipynb
+      - Style presets: examples/plot_style_presets.ipynb
   - API Reference:
       - Overview: api/index.md
       - Plot builder: api/plot_context_builder.md
@@ -60,11 +62,12 @@ nav:
 plugins:
   - search
   - autorefs
-  - gallery:
-      examples_dirs: docs/examples
-      gallery_dirs: docs/generated/gallery
-      filename_pattern: /plot_
-      remove_config_comments: true
+  - mkdocs-jupyter:
+      include: ["examples/*.ipynb"]
+      execute: true
+      allow_errors: false
+      include_source: true
+      ignore_h1_titles: true
   - mkdocstrings:
       handlers:
         python:
