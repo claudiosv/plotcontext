@@ -13,7 +13,7 @@ dependencies = [
     "json-with-comments>=1.2.10",
     "pyarrow>=14",
 ]
-description = "Add your description here"
+description = "Scoped, chainable context managers for publication-ready Matplotlib/Seaborn plots"
 name = "plotcontext"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -30,6 +30,12 @@ dev = [
     "ruff>=0.16.3",
     "ty>=0.0.72",
     "plotcontext[clipboard]",
+]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.6.0",
+    "mkdocstrings[python]>=0.30.0",
+    "mkdocs-autorefs>=1.4.0",
 ]
 
 [tool.pytest]
