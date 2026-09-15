@@ -142,6 +142,20 @@ def test_plot_context_color_map_injects_palette():
 
 
 @pytest.mark.mpl_image_compare(style="default")
+def test_plt_proxy_plot_does_not_misinject_ax_kwarg():
+    """`plt.plot` (and friends) never accept `ax=`; regression test for a
+    bug where the has-**kwargs fallback wrongly forwarded `ax=` into
+    Artist property kwargs, raising ``Line2D.set() got an unexpected
+    keyword argument 'ax'``.
+    """
+    ctx = PlotContext()
+    with ctx:
+        (line,) = ctx.plt.plot([1, 2, 3], [1, 4, 9])
+        assert line.axes is ctx.ax
+    return ctx.figure
+
+
+@pytest.mark.mpl_image_compare(style="default")
 def test_plot_context_save(tmp_path):
     ctx = PlotContext()
     with ctx:

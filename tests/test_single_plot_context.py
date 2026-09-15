@@ -41,6 +41,19 @@ def test_single_plot_context_sns_proxy_injects_ax():
 
 
 @pytest.mark.mpl_image_compare(style="default")
+def test_single_plot_context_plt_proxy_plot_does_not_misinject_ax_kwarg():
+    """`plt.plot` (and friends) never accept `ax=`; regression test for a
+    bug where the has-**kwargs fallback wrongly forwarded `ax=` into
+    Artist property kwargs, raising ``Line2D.set() got an unexpected
+    keyword argument 'ax'``.
+    """
+    with SinglePlotContext(figsize=(4.0, 3.0)) as (ctx, fig, ax):
+        (line,) = ctx.plt.plot([1, 2, 3], [1, 4, 9])
+        assert line.axes is ax
+    return fig
+
+
+@pytest.mark.mpl_image_compare(style="default")
 def test_single_plot_context_save(tmp_path):
     ctx = SinglePlotContext(figsize=(4.0, 3.0))
     with ctx as (_ctx, fig, ax):

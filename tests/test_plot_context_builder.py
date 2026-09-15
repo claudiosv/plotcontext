@@ -115,6 +115,20 @@ def test_plt_proxy_injects_and_tracks_ax():
 
 
 @pytest.mark.mpl_image_compare(style="default")
+def test_plt_proxy_plot_does_not_misinject_ax_kwarg():
+    """`plt.plot` (and friends) never accept `ax=`; regression test for a
+    bug where the has-**kwargs fallback wrongly forwarded `ax=` into
+    Artist property kwargs, raising ``Line2D.set() got an unexpected
+    keyword argument 'ax'``.
+    """
+    plot = Plot()
+    with plot as p:
+        (line,) = p.plt.plot([1, 2, 3], [1, 4, 9])
+        assert line.axes is p.ax
+    return plot.figure
+
+
+@pytest.mark.mpl_image_compare(style="default")
 def test_draw_applies_labels_title_scales_legend_grid():
     plot = (
         Plot()

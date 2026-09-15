@@ -271,6 +271,16 @@ class SinglePlotContext(AbstractPlotContext):
             has_kwargs = any(
                 p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()
             )
+            # Top-level `matplotlib.pyplot` wrappers (e.g. `plt.plot`) never
+            # accept an explicit `ax`/`palette` kwarg -- they implicitly
+            # operate on `plt.gca()`, and their **kwargs are Artist/property
+            # kwargs forwarded to `Line2D.set()` etc., not axes/palette
+            # selectors. Only trust the has_kwargs fallback for functions
+            # that aren't raw pyplot wrappers (e.g. seaborn's axes-level
+            # plotting functions, which accept `ax=`/`palette=` this way).
+            module = getattr(func, "__module__", "") or ""
+            if module.startswith("matplotlib.pyplot"):
+                has_kwargs = False
             accepts = name_in_sig or has_kwargs
             if self.debug:
                 print(
