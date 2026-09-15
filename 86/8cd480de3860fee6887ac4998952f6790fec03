@@ -1,0 +1,23 @@
+pyproject.toml
+  s_9ed7fb902f82e3::t_67c04a22970a37 72-73,78-79
+  s_9ed7fb902f82e3::t_8fb54d54c0c2f7 74-77
+  s_9ed7fb902f82e3::t_e04a15ddf08743 34-35
+uv.lock
+  s_9ed7fb902f82e3::t_611a36636623ec 1428,1432,1486-1494,1589,1595,1597,1625-1635,1692-1704,1829-1841,2074-2082
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "868cd480de3860fee6887ac4998952f6790fec03",
+  "prompts": {},
+  "sessions": {
+    "s_9ed7fb902f82e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c9b38c14-7ff4-484c-8311-8fc622ae46fb",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
