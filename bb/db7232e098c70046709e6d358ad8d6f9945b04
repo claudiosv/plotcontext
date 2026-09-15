@@ -1,0 +1,32 @@
+src/plotcontext/plot_context_builder.py
+  s_158441872566df::t_b217dd202261f7 476,479-490
+tests/test_plot_context_builder.py
+  s_158441872566df::t_4e4f1886c4d338 118-130
+  s_158441872566df::t_9e6c480c8be0ed 117
+src/plotcontext/polars_plot_context.py
+  s_158441872566df::t_110cb702e26f4c 342-351
+src/plotcontext/single_plot_context.py
+  s_158441872566df::t_0947d6a742cad4 274-283
+tests/test_polars_plot_context.py
+  s_158441872566df::t_a7828cc6d7029a 145-157
+  s_158441872566df::t_6301db0d5c1089 144
+tests/test_single_plot_context.py
+  s_158441872566df::t_cf29e9edc94bbf 44-55
+  s_158441872566df::t_a5ad21eac7a3de 43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bbdb7232e098c70046709e6d358ad8d6f9945b04",
+  "prompts": {},
+  "sessions": {
+    "s_158441872566df": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d5e1063-a026-4290-adc2-bfe189116e5f",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
