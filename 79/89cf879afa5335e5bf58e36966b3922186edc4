@@ -1,0 +1,31 @@
+README.md
+  s_c7633e95481ee3::t_6dc05bffb8f010 105-121
+pyproject.toml
+  s_158441872566df::t_c63a4c5da8dc14 40-42
+uv.lock
+  s_c7633e95481ee3::t_f690f3f253bedf 297-305,954-956,1302-1328,1451-1477
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7989cf879afa5335e5bf58e36966b3922186edc4",
+  "prompts": {},
+  "sessions": {
+    "s_158441872566df": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d5e1063-a026-4290-adc2-bfe189116e5f",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    },
+    "s_c7633e95481ee3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "34296d45-53f1-4182-85b0-cc1174504f2e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
