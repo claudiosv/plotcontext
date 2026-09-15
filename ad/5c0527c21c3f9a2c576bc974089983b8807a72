@@ -1,0 +1,31 @@
+.github/workflows/tests.yml
+  s_9ed7fb902f82e3::t_99401e983ffd9c 22-24,31
+pyproject.toml
+  s_9ed7fb902f82e3::t_2a5e15c3594718 34
+uv.lock
+  s_9ed7fb902f82e3::t_a0dc70360548d4 157-165,431-443,969-980,1354-1362,1473,1622,1628,1630,1642-1659,1704-1718,1759-1767,2036-2044,2121-2142,2233-2251
+docs/examples/plot_boxplot_annotations.ipynb
+  s_9ed7fb902f82e3::t_60a5b7c365514b 19,72
+docs/examples/plot_fluent_builder.ipynb
+  s_9ed7fb902f82e3::t_112183ddb0ca16 19,86
+docs/examples/plot_sketch_mode.ipynb
+  s_9ed7fb902f82e3::t_8349596e145f19 19,70
+docs/examples/plot_style_presets.ipynb
+  s_9ed7fb902f82e3::t_329fd5ed3c027d 19,103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ad5c0527c21c3f9a2c576bc974089983b8807a72",
+  "prompts": {},
+  "sessions": {
+    "s_9ed7fb902f82e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c9b38c14-7ff4-484c-8311-8fc622ae46fb",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
