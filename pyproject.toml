@@ -37,6 +37,9 @@ docs = [
     "mkdocstrings[python]>=0.30.0",
     "mkdocs-autorefs>=1.4.0",
 ]
+docs-zensical = [
+    "zensical>=0.0.62",
+]
 
 [tool.pytest]
 minversion = "9.0"

@@ -102,6 +102,23 @@ uv run ruff check    # lint
 
 Full API reference: https://claudiosv.github.io/plotcontext/
 
+The published site is built with [mkdocs-material](https://squidfunk.github.io/mkdocs-material/).
+The same `mkdocs.yml` also builds with [Zensical](https://zensical.org/), the newer static site
+generator from the Material for MkDocs team, for side-by-side comparison:
+
+```bash
+uv run --group docs mkdocs serve                    # mkdocs-material, http://127.0.0.1:8000
+uv run --group docs-zensical zensical serve          # Zensical, http://127.0.0.1:8000
+uv run --group docs-zensical zensical build           # static build into site/
+```
+
+Zensical reads the existing `mkdocs.yml` directly, no separate config needed. By default it
+renders with its own "modern" theme; add `variant: classic` under `theme` in `mkdocs.yml` to
+match the Material for MkDocs look instead. Zensical is still young, so plugins beyond `search`,
+`autorefs`, and `mkdocstrings` (Python handler) may not be supported yet — check
+[its MkDocs compatibility docs](https://zensical.org/docs/compatibility/mkdocs/plugins/) before
+relying on others.
+
 ## License
 
 See
