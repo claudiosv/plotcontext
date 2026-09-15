@@ -13,6 +13,7 @@ wheels/
 .coverage
 .coverage.*
 htmlcov/
+pytest-report/
 .pytest_cache/
 .ruff_cache/
 tests/mpl-results/
@@ -22,3 +23,4 @@ tests/mpl-results/
 
 # mkdocs build output
 site/
+docs/generated/
