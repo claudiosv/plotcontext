@@ -21,10 +21,12 @@ jobs:
       - name: Run tests
         run: uv run pytest
 
-      - name: Upload coverage report
+      - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: htmlcov
-          path: htmlcov
+          name: test-reports
+          path: |
+            htmlcov
+            pytest-report
           retention-days: 14

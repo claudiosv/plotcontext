@@ -8,10 +8,10 @@ dependencies = [
     "polars>=1.0",
     "pandas>=2.0",
     "seaborn>=0.13.2",
-    "statsmodels>=0.14.6",
+    "statsmodels>=0.15.0",
     "emoji>=2.15.0",
-    "json-with-comments>=1.2.10",
-    "pyarrow>=14",
+    "json-with-comments>=1.3.0",
+    "pyarrow>=25.0.1",
 ]
 description = "Scoped, chainable context managers for publication-ready Matplotlib/Seaborn plots"
 name = "plotcontext"
@@ -27,15 +27,19 @@ dev = [
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "pytest-mpl>=0.19.0",
-    "ruff>=0.16.3",
-    "ty>=0.0.72",
+    "ruff>=0.16.7",
+    "ty>=0.0.81",
     "plotcontext[clipboard]",
+    "pytest-html>=4.2.0",
 ]
 docs = [
     "mkdocs>=1.6.1",
-    "mkdocs-material>=9.6.0",
-    "mkdocstrings[python]>=0.30.0",
-    "mkdocs-autorefs>=1.4.0",
+    "mkdocs-material>=9.7.7",
+    "mkdocstrings[python]>=1.0.6",
+    "mkdocs-autorefs>=1.4.4",
+    "mkdocs-gallery>=0.10.4",
+    "mkdocstrings-python>=2.0.8",
+    "pymdown-extensions>=12.0",
 ]
 docs-zensical = [
     "zensical>=0.0.62",
@@ -55,11 +59,13 @@ addopts = [
     "--cov-branch",      # Measure branch coverage in addition to line coverage.
     # "--cov-report=term-missing:skip-covered", # Show uncovered lines; omit files at 100% coverage.
     "--cov-report=html:htmlcov", # Generate an HTML coverage report in ./htmlcov.
+    "--html=pytest-report/report.html", # Generate a self-contained HTML test report.
+    "--self-contained-html",     # Inline CSS/JS so the report is a single file.
     # "--mpl",                     # Enable pytest-mpl image comparison against baselines.
 ]
 
 # Fail early with a clear error if these plugins are not installed.
-required_plugins = ["pytest-cov", "pytest-mpl"]
+required_plugins = ["pytest-cov", "pytest-mpl", "pytest-html"]
 
 # Reference images used by pytest-mpl for regression comparisons.
 mpl-baseline-path = "tests/baseline"
