@@ -1,0 +1,36 @@
+pyproject.toml
+  s_158441872566df::t_296ae2336b0564 42
+.gitignore
+  s_158441872566df::t_968cf8e727bea0 26
+docs/examples/index.md
+  s_158441872566df::t_0ba4cbcfae2492 1-5
+docs/examples/plot_fluent_builder.ipynb
+  s_158441872566df::t_df8acd8de1555c 1-88
+mkdocs.yml
+  s_158441872566df::t_87ee39d3bf28b9 44-49
+  s_158441872566df::t_0cc55e9edce51a 65-70
+docs/examples/plot_style_presets.ipynb
+  s_158441872566df::t_df8acd8de1555c 1-105
+docs/examples/plot_sketch_mode.ipynb
+  s_158441872566df::t_df8acd8de1555c 1-72
+docs/examples/plot_boxplot_annotations.ipynb
+  s_158441872566df::t_df8acd8de1555c 1-74
+uv.lock
+  s_158441872566df::t_7aec5f595a5cb4 10-36,59-88,98-156,278-286,422-438,448-456,466-483,591-659,681-762,846-857,935-967,977-985,1038-1054,1131-1194,1293-1310,1333-1344,1437,1484-1535,1558-1566,1720-1778,1794-1859,1959-1981,2026-2037,2066-2067,2069-2079,2081-2086,2088,2161-2178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2d04459b7f10feb916f581bfcdc5f1a17b99f3c0",
+  "prompts": {},
+  "sessions": {
+    "s_158441872566df": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d5e1063-a026-4290-adc2-bfe189116e5f",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
