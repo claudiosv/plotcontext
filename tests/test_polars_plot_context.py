@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import polars as pl
 import pytest
+from matplotlib.patches import PathPatch
 
 from plotcontext.plot_context import AbstractPlotContext
 from plotcontext.polars_plot_context import (
@@ -478,7 +479,11 @@ def test_plot_context_annotate_boxplot_with_hue_vertical():
     return ctx.figure
 
 
-def test_plot_context_annotate_boxplot_can_disable_centered_labels():
+@pytest.mark.mpl_image_compare(style="default")
+@pytest.mark.parametrize(
+    "label_offset", [0.0, 0.2], ids=["offset-0", "offset-0.2"]
+)
+def test_plot_context_annotate_boxplot_can_disable_centered_labels(label_offset):
     df = pl.DataFrame(
         {
             "group": ["a"] * 4,
@@ -495,12 +500,28 @@ def test_plot_context_annotate_boxplot_can_disable_centered_labels():
             hue="sub",
             annotate="y",
             center_labels=False,
+            label_offset=label_offset,
         )
         centered_positions = [
             (row["x_align"] + 0.5, offset)
             for offset, row in enumerate(counts.iter_rows(named=True))
         ]
-        assert [text.get_position() for text in ax.texts] != centered_positions
+        label_positions = [text.get_position() for text in ax.texts]
+        box_centers = []
+        for box in [patch for patch in ax.patches if isinstance(patch, PathPatch)]:
+            vertices = box.get_path().vertices
+            box_centers.append(
+                (
+                    (vertices[:, 0].min() + vertices[:, 0].max()) / 2,
+                    (vertices[:, 1].min() + vertices[:, 1].max()) / 2,
+                )
+            )
+        assert label_positions != centered_positions
+        if label_offset == 0:
+            assert label_positions == box_centers
+        else:
+            assert label_positions != box_centers
+    return ctx.figure
 
 
 @pytest.mark.mpl_image_compare(style="default")

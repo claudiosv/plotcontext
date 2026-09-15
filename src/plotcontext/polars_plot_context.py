@@ -465,6 +465,7 @@ class PlotContext(AbstractPlotContext):
         x = kwargs.get("x" if annotate == "y" else "y")
         x_align = kwargs.get("x_align", "median")
         center_labels = kwargs.pop("center_labels", False)
+        label_offset = kwargs.pop("label_offset", 0.0)
 
         # Preserve appearance order unless explicit orders were supplied.
         hue_order = (
@@ -529,6 +530,7 @@ class PlotContext(AbstractPlotContext):
                 annotation_counts,
                 annotate=annotate,
                 center_labels=center_labels,
+                label_offset=label_offset,
             )
             return g, counts
 
@@ -565,6 +567,7 @@ class PlotContext(AbstractPlotContext):
         *,
         annotate: str,
         center_labels: bool = False,
+        label_offset: float = 0.0,
     ) -> None:
         """Annotate boxes at legacy centered positions or using artist geometry."""
         boxes = [patch for patch in ax.patches if isinstance(patch, PathPatch)]
@@ -594,10 +597,10 @@ class PlotContext(AbstractPlotContext):
                     category_center = round(y_center)
                     box_height = y_coords.max() - y_coords.min()
 
-                    direction = 0 #1 if y_center > category_center else -1
+                    direction = 1 if y_center > category_center else -1
 
                     label_x = x_center
-                    label_y = y_center + direction * box_height * 0.4
+                    label_y = y_center + direction * box_height * label_offset
                 else:
                     # Vertical boxplot:
                     #
@@ -608,9 +611,9 @@ class PlotContext(AbstractPlotContext):
                     category_center = round(x_center)
                     box_width = x_coords.max() - x_coords.min()
 
-                    direction = 0 #1 if x_center > category_center else -1
+                    direction = 1 if x_center > category_center else -1
 
-                    label_x = x_center + direction * box_width * 0.4
+                    label_x = x_center + direction * box_width * label_offset
                     label_y = y_center
 
             n = int(row["n"])
