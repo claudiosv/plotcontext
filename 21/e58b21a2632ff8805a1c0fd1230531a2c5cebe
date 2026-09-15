@@ -1,0 +1,64 @@
+docs/examples/plot_fluent_builder.py
+  s_158441872566df::t_c0bae5bd15256f 45-47
+  s_158441872566df::t_9fd739f1aba0d8 1-44,48-50
+docs/examples/plot_boxplot_annotations.py
+  s_6347315ebde81c::t_293350755c9e1b 1-24,28-34,36-37,39-41
+  s_6347315ebde81c::t_d87c5d00ad67f0 35
+  s_158441872566df::t_fd6557bbfa3865 25-27,38
+docs/examples/plot_style_presets.py
+  s_158441872566df::t_20899d1269fe09 1-26,31-35,39-40,44-45,47-51,55-56
+  s_158441872566df::t_5639d75cbd4b6d 27-30,36-38,41-43,46,52-54,57
+docs/hooks/gallery_compat.py
+  s_6347315ebde81c::t_826b7dfaee6976 1-17
+.gitignore
+  s_158441872566df::t_479ee6f2a2635d 26
+  s_158441872566df::t_bd179208d72252 16
+docs/examples/plot_sketch_mode.py
+  s_158441872566df::t_f95e97ebc62a53 34
+  s_158441872566df::t_269ee3bb99ecd9 1-33,35-38
+.github/workflows/tests.yml
+  s_158441872566df::t_6901513090fb02 24,28-31
+pyproject.toml
+  s_158441872566df::t_b2d190368b3eba 33
+  s_6347315ebde81c::t_d5a486195f5e08 40-42
+  s_158441872566df::t_81a20948facdbe 59-60,65
+  h_aceaeb4e74d6dc 11,13-14,30-31,37-39
+docs/examples/README.md
+  s_6347315ebde81c::t_59e603156fe211 1-4
+mkdocs.yml
+  s_158441872566df::t_67df6359ab9035 104
+  s_6347315ebde81c::t_1e9dc332a96514 43
+  s_6347315ebde81c::t_967309d116500e 59-63
+  s_6347315ebde81c::t_208e18d0b8dbf3 8-10
+uv.lock
+  s_158441872566df::t_dca20d1307bab3 641-655,950,958,961-962,1085-1110,1335-1346
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "21e58b21a2632ff8805a1c0fd1230531a2c5cebe",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_158441872566df": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d5e1063-a026-4290-adc2-bfe189116e5f",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    },
+    "s_6347315ebde81c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06bc2506-770a-46f8-be5a-00394f834706",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
