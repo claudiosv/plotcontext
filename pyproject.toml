@@ -31,6 +31,8 @@ dev = [
     "ty>=0.0.81",
     "plotcontext[clipboard]",
     "pytest-html>=4.2.0",
+    "pytest-clarity>=1.0.1",
+    "pytest-sugar>=1.1.1",
 ]
 docs = [
     "mkdocs>=1.6.1",
@@ -66,6 +68,14 @@ addopts = [
 
 # Fail early with a clear error if these plugins are not installed.
 required_plugins = ["pytest-cov", "pytest-mpl", "pytest-html"]
+
+filterwarnings = [
+    # seaborn's boxplot calls ax.bxp(vert=...) internally; the deprecation is
+    # seaborn's to fix, not something plotcontext callers can control. The
+    # colon in the message is escaped as "." since pytest's filter string
+    # splits on literal colons.
+    "ignore:vert. bool was deprecated in Matplotlib 3\\.11:matplotlib.MatplotlibDeprecationWarning",
+]
 
 # Reference images used by pytest-mpl for regression comparisons.
 mpl-baseline-path = "tests/baseline"
