@@ -1,0 +1,19 @@
+mkdocs.yml
+  s_c7633e95481ee3::t_5d45aa61612fa4 11-14,28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2a4e3854a1d3e6deee55840c80c20ea002eff65d",
+  "prompts": {},
+  "sessions": {
+    "s_c7633e95481ee3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "34296d45-53f1-4182-85b0-cc1174504f2e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
