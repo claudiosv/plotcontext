@@ -31,6 +31,7 @@ dev = [
     "ty>=0.0.81",
     "plotcontext[clipboard]",
     "pytest-html>=4.2.0",
+    "pytest-md-report>=0.7.0",
 ]
 docs = [
     "mkdocs>=1.6.1",

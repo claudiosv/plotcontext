@@ -19,16 +19,17 @@ jobs:
         run: uv sync
 
       - name: Run tests
-        run: uv run pytest | tee pytest-output.txt
+        run: >
+          uv run pytest --md-report --md-report-flavor=github
+          --md-report-color=never
+          --md-report-output=pytest-report/report.md
 
       - name: Write job summary
         if: always()
         run: |
           {
             echo "## Test results"
-            echo '```'
-            tail -n 30 pytest-output.txt
-            echo '```'
+            cat pytest-report/report.md
             echo "## Coverage"
             uv run coverage report --format=markdown
           } >> "$GITHUB_STEP_SUMMARY"
