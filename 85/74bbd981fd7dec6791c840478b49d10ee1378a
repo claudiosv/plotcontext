@@ -1,0 +1,36 @@
+uv.lock
+  s_6347315ebde81c::t_cefbb9b87347d2 30,35-82,87-151,174-228,240-248,263,265,267,272-341,376,389-425,427,432-478,521,525,527,529,623,628,630,635,637,639-646,749-769,774,779-820,848,851,858-887,892-912,916-917,919,921-983
+src/plotcontext/polars_plot_context.py
+  s_092d4701032f54::t_2b24b4561acf84 468,533,570,600,603,614,616
+tests/test_polars_plot_context.py
+  s_092d4701032f54::t_02b6ab6831d6ab 4,482-486,503,509-524
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8574bbd981fd7dec6791c840478b49d10ee1378a",
+  "prompts": {},
+  "humans": {
+    "h_aceaeb4e74d6dc": {
+      "author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_092d4701032f54": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a016c1-5cbb-72b1-b245-7d47c3ec63c0",
+        "model": "unknown"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    },
+    "s_6347315ebde81c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06bc2506-770a-46f8-be5a-00394f834706",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
