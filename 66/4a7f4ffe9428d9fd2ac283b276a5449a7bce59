@@ -1,0 +1,19 @@
+docs/examples/plot_sketch_mode.ipynb
+  s_9ed7fb902f82e3::t_be3badee9e6af4 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "664a7f4ffe9428d9fd2ac283b276a5449a7bce59",
+  "prompts": {},
+  "sessions": {
+    "s_9ed7fb902f82e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c9b38c14-7ff4-484c-8311-8fc622ae46fb",
+        "model": "unknown"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
